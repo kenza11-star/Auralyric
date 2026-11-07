@@ -9,7 +9,7 @@ Yooo, thanks for wanting to help out. This thing is small, so the process here i
 
 - Any device that have screen
 - Android Studio (latest stable) and JDK 21
-- The project is Kotlin + Jetpack Compose, split into the `app` module and a set of `providers:*` modules (InnerTube, lyrics providers, Last.fm, Discord RPC, etc.)
+- The project is Kotlin + Jetpac Compose, split into the `app` module and a set of `providers:*` modules (InnerTube, lyrics providers, Last.fm, Discord RPC, etc.)
 - Build from the terminal with the helper script:
 
   ```bash
