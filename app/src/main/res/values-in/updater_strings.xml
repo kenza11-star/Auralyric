@@ -35,7 +35,7 @@
     <string name="mobile_network_warning">Mengunduh pembaruan melalui jaringan seluler atau saat roaming dapat menimbulkan biaya tambahan.</string>
     <string name="update_size">Ukuran pembaruan: %1$s MB</string>
     <string name="check_internet_connection">Periksa koneksi internet dan coba lagi.</string>
-    <string name="mochy_music_version">mochy MUSIC versi %1$s</string>
+    <string name="mochy_music_version">Auralyric MUSIC versi %1$s</string>
     <string name="last_checked">Terakhir diperiksa: %1$s</string>
     <string name="install">Instal</string>
     <string name="check_for_update">Periksa pembaruan</string>
@@ -50,12 +50,11 @@
     <string name="update_notifications_subtitle">Tampilkan notifikasi saat pembaruan baru ditemukan</string>
     <string name="settings_check_updates_title">Periksa pembaruan</string>
     <string name="later">Nanti</string>
-    <string name="mochy_music_title">mochy MUSIC</string>
+    <string name="mochy_music_title">Auralyric MUSIC</string>
     <string name="developer_section">PENGEMBANG</string>
     <string name="collaborator_section">KOLABORATOR</string>
     <string name="app_info_section">INFO APLIKASI</string>
     <string name="community_section">KOMUNITAS</string>
-    <string name="developer_name">mochyDH P ASHOKAN</string>
     <string name="app_developer">Pengembang utama</string>
     <string name="website">Situs web</string>
     <string name="collaborator_tboyke">T-Boyke</string>

@@ -124,8 +124,8 @@ fun ImportSyncScreen(
             style = SettingsGroupStyle.Grouped,
             items = listOf(
                 SettingsItem(
-                    title = { Text("Export to Mochy CSV") },
-                    highlightKey = "Export to Mochy CSV",
+                    title = { Text("Export to Auralyric CSV") },
+                    highlightKey = "Export to Auralyric CSV",
                     descriptionText = "Liked songs and playlists",
                     detail = "Liked songs and playlists, import it back from Import → Mochy backup",
                     icon = painterResource(R.drawable.backup),

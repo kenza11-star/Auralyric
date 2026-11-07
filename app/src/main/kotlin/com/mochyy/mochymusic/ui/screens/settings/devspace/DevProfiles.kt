@@ -28,9 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import coil3.request.transformations
 import com.mochyy.mochymusic.R
 import com.mochyy.mochymusic.ui.utils.SoftBlurTransformation
@@ -97,9 +99,11 @@ internal fun DevProfilePage(
     below: @Composable ColumnScope.() -> Unit,
 ) {
     val reveal = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { reveal.animateTo(1f, tween(900, easing = Emphasized)) }
+    LaunchedEffect(Unit) { reveal.animateTo(1f, tween(700, easing = Emphasized)) }
     // each section starts a little after the one above it
     fun Modifier.rise(step: Int): Modifier = graphicsLayer {
+        // text and lines only, so fading each part on its own skips an offscreen buffer per section
+        compositingStrategy = CompositingStrategy.ModulateAlpha
         val p = ((reveal.value - step * 0.08f) / 0.6f).coerceIn(0f, 1f)
         alpha = p
         translationY = (1f - p) * 26.dp.toPx()
@@ -150,6 +154,7 @@ private fun ProfileHeader(person: DevPerson, scrollState: ScrollState, bannerHei
         ImageRequest.Builder(context)
             .data(person.avatar)
             .size(192)
+            .crossfade(true)
             .transformations(SoftBlurTransformation())
             .build()
     }
@@ -170,11 +175,15 @@ private fun ProfileHeader(person: DevPerson, scrollState: ScrollState, bannerHei
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .drawWithContent {
-                        drawContent()
-                        drawRect(Color.Black.copy(alpha = 0.32f))
-                        // melts into the black page so the avatar's lower half sits on one colour
-                        drawRect(Brush.verticalGradient(0.55f to Color.Transparent, 1f to Color.Black))
+                    .drawWithCache {
+                        // built once instead of on every scroll frame
+                        val melt = Brush.verticalGradient(0.55f to Color.Transparent, 1f to Color.Black)
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(Color.Black.copy(alpha = 0.32f))
+                            // melts into the black page so the avatar's lower half sits on one colour
+                            drawRect(melt)
+                        }
                     },
             )
         }

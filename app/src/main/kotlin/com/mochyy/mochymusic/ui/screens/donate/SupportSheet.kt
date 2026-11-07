@@ -70,14 +70,14 @@ private fun SupportSheetContent() {
             DonateCharacter(width = characterWidth)
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "Enjoying Mochy Music?",
+                text = "Enjoying Auralyric?",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = DonateSoftText,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Support Mochy’s development!",
+                text = "Support Auralyric’s development!",
                 fontSize = 32.sp,
                 lineHeight = 36.sp,
                 fontWeight = FontWeight.Bold,
@@ -87,9 +87,9 @@ private fun SupportSheetContent() {
             )
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "thanks for trying it out! btw, Mochy Music will always be free, forever yours! <3\n\n" +
+                text = "thanks for trying it out! btw, Auralyric will always be free, forever yours! <3\n\n" +
                     "It would be very useful for us if you support the developer, no matter how small it is!! <3\n" +
-                    "giving a star to Mochy’s repo is already enough. and thanks again!",
+                    "giving a star to Auralyric’s repo is already enough. and thanks again!",
                 fontSize = 13.5.sp,
                 lineHeight = 18.sp,
                 fontWeight = FontWeight.Bold,

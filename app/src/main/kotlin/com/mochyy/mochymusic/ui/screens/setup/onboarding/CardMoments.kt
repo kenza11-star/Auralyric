@@ -205,7 +205,7 @@ internal fun HelloCardStep(
                 },
         ) {
             Text("Hello!", color = Color.White, fontSize = 64.sp, lineHeight = 66.sp, fontWeight = FontWeight.Bold, letterSpacing = (-2).sp)
-            Text("welcome to mochy!", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Text("welcome to Auralyric!", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

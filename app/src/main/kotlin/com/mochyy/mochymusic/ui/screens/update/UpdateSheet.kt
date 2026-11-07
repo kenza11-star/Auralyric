@@ -93,9 +93,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun rememberUpdateState(): androidx.compose.runtime.State<UpdateState> {
-    val state = remember { mutableStateOf<UpdateState>(UpdateState.Checking) }
-    LaunchedEffect(Unit) { state.value = checkUpdate(force = false) }
-    return state
+    // Auralyric has no release feed yet, so nothing is checked and no "update" text ever shows
+    return remember { mutableStateOf<UpdateState>(UpdateState.UpToDate) }
 }
 
 /** asks github (or the shared copy, unless force is set) whether a newer release is out */
@@ -215,7 +214,7 @@ private fun ColumnScope.UpdateSheetContent(
             }
 
             Spacer(Modifier.height(14.dp))
-            Text("Mochy", fontSize = 17.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
+            Text("Auralyric", fontSize = 17.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     installed,
@@ -484,7 +483,7 @@ private fun ColumnScope.UpdateDetailContent(
 
     val startInstall: (java.io.File) -> Unit = { file ->
         if (!installApk(context, file)) {
-            error = "Allow \"Install unknown apps\" for mochy, then tap Install here again."
+            error = "Allow \"Install unknown apps\" for Auralyric, then tap Install here again."
         }
     }
 

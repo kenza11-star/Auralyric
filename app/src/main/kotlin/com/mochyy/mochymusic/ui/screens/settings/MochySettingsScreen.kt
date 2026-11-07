@@ -562,7 +562,7 @@ fun MochySettingsScreen(navController: NavController) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
                         painter = painterResource(R.drawable.ic_mochy_mark),
-                        contentDescription = "Mochy",
+                        contentDescription = "Auralyric",
                         tint = Color.White,
                         modifier = Modifier.size(SettingsMarkSize),
                     )

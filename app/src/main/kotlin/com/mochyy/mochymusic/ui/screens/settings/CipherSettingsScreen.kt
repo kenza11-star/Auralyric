@@ -152,7 +152,7 @@ fun CipherSettingsScreen(navController: NavController) {
 
                 Text(
                     text = "YouTube signs its stream URLs with a player script that changes " +
-                        "periodically. mochy caches that script and re-downloads it automatically.",
+                        "periodically. Auralyric caches that script and re-downloads it automatically.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

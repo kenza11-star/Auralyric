@@ -29,6 +29,6 @@
     <string name="bedside_lock_screen">Show on the lock screen</string>
     <string name="bedside_lock_screen_caption">Lock the phone with this open and it\'s still here when the screen wakes</string>
     <string name="bedside_lock_blocked">Your phone is blocking this</string>
-    <string name="bedside_lock_blocked_caption">Tap to turn on \"Show on Lock screen\" for Mochy</string>
+    <string name="bedside_lock_blocked_caption">Tap to turn on \"Show on Lock screen\" for Auralyric</string>
     <string name="bedside_lock_blocked_tag">FIX</string>
 </resources>

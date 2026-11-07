@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -108,6 +110,12 @@ fun DeveloperSpaceScreen(navController: NavController, initialPage: Int = 0) {
             HorizontalPager(
                 state = pagerState,
                 beyondViewportPageCount = 1,
+                key = { DevPeople[it].name },
+                // a soft spring settles each swipe instead of the stiff default snap
+                flingBehavior = PagerDefaults.flingBehavior(
+                    state = pagerState,
+                    snapAnimationSpec = spring(dampingRatio = 0.9f, stiffness = 320f),
+                ),
                 modifier = Modifier.fillMaxSize(),
             ) { page ->
                 val person = DevPeople[page]
@@ -116,6 +124,7 @@ fun DeveloperSpaceScreen(navController: NavController, initialPage: Int = 0) {
                     scrollState = scrollStates[page],
                     bannerHeight = bannerHeight,
                     modifier = Modifier.graphicsLayer {
+                        compositingStrategy = CompositingStrategy.ModulateAlpha
                         // the page leaving sinks back a little and dims, so a swipe has some depth
                         val offset = abs(pagerState.currentPage - page + pagerState.currentPageOffsetFraction).coerceIn(0f, 1f)
                         val s = 1f - 0.06f * offset

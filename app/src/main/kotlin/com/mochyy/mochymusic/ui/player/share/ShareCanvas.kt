@@ -99,7 +99,7 @@ internal fun MochyMark(color: Color, size: Float = 14f) {
             modifier = Modifier.size((size + 2f).dp),
         )
         Spacer(Modifier.width(6.dp))
-        Text("Mochy", style = shareText(size, color = color, tracking = -0.4f))
+        Text("Auralyric", style = shareText(size, color = color, tracking = -0.4f))
     }
 }
 

@@ -169,7 +169,7 @@ fun TopPlaylistScreen(
         searchPlaceholder = "Search your top songs",
         onBackClick = { navController.navigateUp() },
         onBackLongClick = { navController.backToMain() },
-        creator = "mochy",
+        creator = "Auralyric",
         onMoreClick = {
             menuState.show {
                 TopPlaylistMenu(

@@ -241,7 +241,7 @@ class TransferImporter @Inject constructor(
     private fun Result<TransferManifest>.friendly(): Result<TransferManifest> = recoverCatching { error ->
         throw when (error) {
             is TransferException -> error
-            is NotAnExport -> TransferException("That isn't a Mochy export. Pick the .zip you exported from your old app.")
+            is NotAnExport -> TransferException("That isn't a Auralyric export. Pick the .zip you exported from your old app.")
             else -> TransferException("Couldn't import that file. Make sure there's free space and try again.", error)
         }
     }

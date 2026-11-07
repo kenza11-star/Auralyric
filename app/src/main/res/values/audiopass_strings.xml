@@ -8,7 +8,7 @@
 
     <string name="audiopass_status_label">status</string>
     <string name="audiopass_status_connected">Connected</string>
-    <string name="audiopass_status_driven">Driven by Mochy</string>
+    <string name="audiopass_status_driven">Driven by Auralyric</string>
     <string name="audiopass_status_bluetooth">Bluetooth</string>
     <string name="audiopass_status_wired">Headphones</string>
     <string name="audiopass_status_none">Not connected</string>
@@ -56,14 +56,14 @@
     <string name="audiopass_bt_open_developer">Open Developer options</string>
     <string name="audiopass_bt_developer_off">Turn on Developer options first: tap Build number 7 times in About phone.</string>
     <string name="audiopass_bt_permission">Show the codec</string>
-    <string name="audiopass_bt_permission_hint">Mochy needs the Nearby devices permission to see which codec your headphones use.</string>
+    <string name="audiopass_bt_permission_hint">Auralyric needs the Nearby devices permission to see which codec your headphones use.</string>
     <string name="audiopass_bt_unknown_hint">This phone doesn\'t tell apps the codec straight away. It shows up here as soon as it changes.</string>
 
     <string name="audiopass_options">Optstions</string>
     <string name="audiopass_prefer_usb">Use the DAC when connected</string>
     <string name="audiopass_hires">Hi-res output (32-bit)</string>
     <string name="audiopass_exclusive">Exclusibve stugf</string>
-    <string name="audiopass_resampler">Mochy own Hi-fi resampler</string>
+    <string name="audiopass_resampler">Auralyric own Hi-fi resampler</string>
     <string name="audiopass_resampler_desc">Speaker and headphone jack only. Songs are brought to the phone\'s own rate with a cleaner filter than Android\'s.</string>
     <string name="audiopass_passthrough">Bit-perfect passthrough</string>
     <string name="audiopass_passthrough_desc">Songs reach the DAC as they are, without Android mixing or resampling them.</string>
@@ -73,9 +73,9 @@
     <string name="audiopass_mode_bit_perfect">Bit-perfect</string>
     <string name="audiopass_mode_bit_perfect_desc">Android hands every lossless song to the DAC untouched.</string>
     <string name="audiopass_mode_direct_usb">Direct USB</string>
-    <string name="audiopass_mode_direct_usb_desc">Mochy drives the DAC itself on any Android and sets the volume on the DAC. Asks for USB access.</string>
+    <string name="audiopass_mode_direct_usb_desc">Auralyric drives the DAC itself on any Android and sets the volume on the DAC. Asks for USB access.</string>
     <string name="audiopass_mode_exclusive_usb">Exclusive USB</string>
-    <string name="audiopass_mode_exclusive_usb_desc">The DAC opens just for Mochy at the song\'s rate. Not every phone allows it.</string>
+    <string name="audiopass_mode_exclusive_usb_desc">The DAC opens just for Auralyric at the song\'s rate. Not every phone allows it.</string>
     <string name="audiopass_mode_exclusive_dac">Built-in DAC</string>
     <string name="audiopass_mode_exclusive_dac_desc">For music players with their own DAC: the headphone jack opens just for Mochy.</string>
     <string name="audiopass_mode_needs">Needs Android %1$s</string>
@@ -93,13 +93,13 @@
     <string name="audiopass_blocker_lossy">Lossy songs (YouTube, Apple Music) always play the normal way.</string>
     <string name="audiopass_now_bitperfect">Bit-perfect to %1$s · %2$s kHz · %3$s-bit</string>
     <string name="audiopass_now_untouched">Untouched to %1$s · %2$s kHz · %3$s-bit. The song itself was compressed before it got here.</string>
-    <string name="audiopass_now_inexact">Reaching %1$s unchanged, but this song\'s samples were already rounded before Mochy got them.</string>
+    <string name="audiopass_now_inexact">Reaching %1$s unchanged, but this song\'s samples were already rounded before Auralyric got them.</string>
     <string name="audiopass_now_waiting">Its Ready rn. The next song it can take -> straight intto the dac.</string>
     <string name="audiopass_now_fell">A %1$s kHz %2$s-bit song couldn\'t open the DAC this way, so it plays the normal way.</string>
     <string name="audiopass_usb_title">Direct USB</string>
     <string name="audiopass_usb_permission">Allow USB access</string>
     <string name="audiopass_usb_permission_hint">Android asks each time the DAC is plugged in. Until you allow it, songs play the normal way.</string>
-    <string name="audiopass_usb_no_dac">Plug in a USB DAC and Mochy takes it from here.</string>
+    <string name="audiopass_usb_no_dac">Plug in a USB DAC and Auralyric takes it from here.</string>
     <string name="audiopass_fixed_volume">DACs without a volume of their own</string>
     <string name="audiopass_fixed_volume_desc">Plays them at full scale, so only their own knob turns them down. This can be very loud with sensitive headphones.</string>
     <string name="audiopass_dac_volume">DAC volume</string>

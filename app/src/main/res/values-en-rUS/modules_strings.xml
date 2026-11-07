@@ -16,14 +16,14 @@
     <string name="module_by">%1$s · by %2$s</string>
     <string name="modules_find_more">Find more sources</string>
     <string name="modules_find_more_desc">Add a module from the catalog or from a link</string>
-    <string name="modules_find_more_body">A module is a service someone else runs. Mochy only asks it for songs, lyrics or a look, and it can\'t touch anything else in the app.</string>
+    <string name="modules_find_more_body">A module is a service someone else runs. Auralyric only asks it for songs, lyrics or a look, and it can\'t touch anything else in the app.</string>
     <string name="modules_add_from_link">Add from a link</string>
     <string name="modules_link_hint">https://…</string>
     <string name="modules_link_check">Check the link</string>
     <string name="modules_link_checking">Checking…</string>
     <string name="modules_link_not_a_link">That doesn\'t look like a link. It should start with https://</string>
     <string name="modules_link_unreachable">Couldn\'t reach that link. Check it and your connection, then try again.</string>
-    <string name="modules_link_not_a_module">That link answered, but it isn\'t a module Mochy can use.</string>
+    <string name="modules_link_not_a_module">That link answered, but it isn\'t a module Auralyric can use.</string>
     <string name="modules_catalog">From the catalog</string>
     <string name="modules_catalog_failed">Couldn\'t load the catalog. Check your connection and open this again.</string>
     <string name="modules_catalog_empty">Nothing in the catalog yet. Paste a module\'s link above to add it.</string>

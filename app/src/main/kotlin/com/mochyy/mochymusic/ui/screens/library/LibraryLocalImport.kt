@@ -104,7 +104,7 @@ fun rememberLocalImportActions(viewModel: LibraryImportViewModel): LocalImportAc
         } else {
             // a second "no" stops Android asking at all, so point to where it can still be turned on
             TopToaster.show(
-                text = "Mochy can't see your music without access",
+                text = "Auralyric can't see your music without access",
                 iconRes = R.drawable.storage,
                 actionLabel = "Settings",
                 onAction = {

@@ -59,7 +59,7 @@ internal fun LazyListScope.libraryLocalTab(
                 modifier = Modifier.padding(horizontal = SearchHorizontalPadding + 2.dp, vertical = 10.dp),
             )
             LocalCard(onClick = onScan, modifier = Modifier.padding(horizontal = SearchHorizontalPadding)) {
-                LocalCardTitle("Let Mochy read your storage to find all your songs")
+                LocalCardTitle("Let Auralyric read your storage to find all your songs")
             }
         }
     }

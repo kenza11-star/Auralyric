@@ -81,7 +81,7 @@ fun UpdatePromptSheet(
         } else {
             needsPermission = true
             readyToInstall = true
-            error = "Allow \"Install unknown apps\" for mochy, then tap Install here again."
+            error = "Allow \"Install unknown apps\" for Auralyric, then tap Install here again."
         }
     }
 

@@ -17,8 +17,6 @@ const val GithubRepo = "Mochy-Music"
 
 const val GithubProfileUrl = "https://github.com/$GithubOwner"
 const val GithubRepoUrl = "https://github.com/$GithubOwner/$GithubRepo"
-// community invite, opened from the modules and profile screens
-const val DiscordUrl = "https://discord.gg/NTmqVphbRY"
 
 private const val ReleasesApi =
     "https://api.github.com/repos/$GithubOwner/$GithubRepo/releases?per_page=20"

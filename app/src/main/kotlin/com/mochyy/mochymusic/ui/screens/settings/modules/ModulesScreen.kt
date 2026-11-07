@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mochyy.mochymusic.R
-import com.mochyy.mochymusic.core.updater.DiscordUrl
 import com.mochyy.mochymusic.modules.ModuleEntry
 import com.mochyy.mochymusic.ui.component.BetaBadge
 import com.mochyy.mochymusic.ui.component.LocalZoomOutOverlayState
@@ -66,9 +65,6 @@ fun ModulesScreen(navController: NavController, viewModel: ModulesViewModel = hi
         onBack = { navController.navigateUp() },
         titleBadge = { BetaBadge() },
     ) {
-        // mochy's bar is where people share modules, so it leads the page
-        ModulesBarBanner { context.openDevUrl(DiscordUrl) }
-        Spacer(Modifier.height(16.dp))
         Text(
             stringResource(R.string.modules_intro),
             fontFamily = InterFontFamily, fontSize = 14.sp, lineHeight = 19.sp, color = LabColors.Secondary,
@@ -144,33 +140,5 @@ private fun FindMoreButton(onClick: () -> Unit) {
             Text(stringResource(R.string.modules_find_more_desc), fontFamily = InterFontFamily, fontSize = 12.sp, lineHeight = 16.sp, color = LabColors.Secondary)
         }
         Icon(painterResource(R.drawable.add), null, tint = LabColors.Secondary, modifier = Modifier.size(20.dp))
-    }
-}
-
-/** mochy peeking up from the bottom of the card, leading to the discord server where people share modules */
-@Composable
-private fun ModulesBarBanner(onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .clip(RowShape)
-            .background(LabColors.Card)
-            .clickable(onClick = onClick)
-            .padding(start = 24.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // the drawing ends at her jacket, so sitting on the card's bottom edge cuts her off there like the design
-        Image(
-            painterResource(R.drawable.modules_bar_mochy), null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.align(Alignment.Bottom).padding(top = 8.dp).fillMaxHeight(),
-        )
-        Spacer(Modifier.width(22.dp))
-        Text(
-            stringResource(R.string.modules_bar),
-            fontFamily = InterFontFamily, fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 22.sp,
-            letterSpacing = (-0.6).sp, color = Color.White, modifier = Modifier.weight(1f),
-        )
     }
 }
