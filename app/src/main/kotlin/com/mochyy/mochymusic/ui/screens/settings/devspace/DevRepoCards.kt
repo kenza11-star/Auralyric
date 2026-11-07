@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -170,8 +171,9 @@ internal fun RepoIssuesSection(
     var filter by remember { mutableStateOf(IssueFilter.All) }
     var showAllOpen by remember { mutableStateOf(false) }
     var showAllResolved by remember { mutableStateOf(false) }
-    val open = stats?.issues.orEmpty().filter { it.open }
-    val resolved = stats?.issues.orEmpty().filter { !it.open }
+    // split once per fetch instead of on every recomposition
+    val open = remember(stats) { stats?.issues.orEmpty().filter { it.open } }
+    val resolved = remember(stats) { stats?.issues.orEmpty().filter { !it.open } }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         DevPanel {
@@ -183,7 +185,7 @@ internal fun RepoIssuesSection(
                 onSelect = { filter = it; showAllOpen = false; showAllResolved = false },
             )
             Spacer(Modifier.height(12.dp))
-            val shown = open.filter { filter.matches(it) }
+            val shown = remember(open, filter) { open.filter { filter.matches(it) } }
             when {
                 stats == null && loading -> repeat(3) { SkeletonRow() }
                 stats == null -> RetryNote(error ?: "Couldn't reach GitHub", onRetry)
@@ -196,7 +198,7 @@ internal fun RepoIssuesSection(
             }
         }
 
-        val shownResolved = resolved.filter { filter.matches(it) }
+        val shownResolved = remember(resolved, filter) { resolved.filter { filter.matches(it) } }
         if (stats != null && shownResolved.isNotEmpty()) {
             DevPanel {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -237,7 +239,10 @@ private fun FilterChips(selected: IssueFilter, countOf: (IssueFilter) -> Int, on
 private fun IssueList(issues: List<DevIssue>, showAll: Boolean, context: Context, onShowAll: () -> Unit) {
     val visible = if (showAll) issues else issues.take(IssueRowsShown)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        visible.forEach { IssueRow(it) { context.openDevUrl(it.url) } }
+        visible.forEach { issue ->
+            // keyed so a filter change reuses rows instead of rebuilding the whole list
+            key(issue.number) { IssueRow(issue) { context.openDevUrl(issue.url) } }
+        }
         if (!showAll && issues.size > IssueRowsShown) {
             Text(
                 "Show all ${issues.size}",

@@ -139,7 +139,7 @@ fun ChangelogScreen(
                         showingCached = true
                     }
                 } else {
-                    val changelogUrl = URL("https://github.com/realidkroo/Mochy-Music/releases/download/$tag/changelog.json")
+                    val changelogUrl = URL("https://github.com/kenza11-star/Auralyric/releases/download/$tag/changelog.json")
                     val connection = changelogUrl.openConnection() as HttpURLConnection
                     connection.setRequestProperty("User-Agent", "Mochy-Changelog-App")
                     connection.setRequestProperty("Accept", "application/json")
@@ -212,7 +212,7 @@ fun ChangelogScreen(
         isFetchingOldReleases = true
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                val releasesUrl = URL("https://api.github.com/repos/realidkroo/Mochy-Music/releases")
+                val releasesUrl = URL("https://api.github.com/repos/kenza11-star/Auralyric/releases")
                 val connection = releasesUrl.openConnection() as HttpURLConnection
                 connection.setRequestProperty("User-Agent", "Mochy-Changelog-App")
                 connection.setRequestProperty("Accept", "application/vnd.github+json")
