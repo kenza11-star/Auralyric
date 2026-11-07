@@ -12,10 +12,16 @@ on:
   pull_request:
     branches: [ '**' ]
 
+# only the newest run for a branch keeps going, older ones are cancelled
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_release:
     name: Build Auralyric (arm64 GMS release)
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     if: github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v5

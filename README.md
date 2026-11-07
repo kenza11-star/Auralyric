@@ -42,7 +42,7 @@
 
 ---
 
-##how to install? :3
+## Hhhh-how to install? :3
 
 1. On your phone, open the [latest release](https://github.com/kenza11-star/Auralyric/releases/latest).
 2. Download the `.apk` that matches your phone. If you are not sure, pick **arm64**, that is almost every phone from the last 8 years. The **universal** one works everywhere but is bigger.
@@ -53,6 +53,12 @@ Updating works the same way: install the new apk over the old one and your libra
 
 > [!TIP]
 > Only download Auralyric from the releases page of this repo. A random mediafire or telegram link could be a modified app, and then your logins would not be safe.
+
+---
+
+## Preview
+
+<img src="assets/banner.jpg" alt="Auralyric preview" width="100%" />
 
 
 ---
