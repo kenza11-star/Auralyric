@@ -3,6 +3,9 @@
 // The profile page's hidden streak card: shows once the user has listened 3 days in a row.
 // A flame that flickers and sways, coloured by milestone (3 / 30 / 100 / 200 / 300 / 400 / 500+),
 // the day count on an odometer, and a thin bar to the next colour.
+//
+// A missed yesterday shows the streak grey with a "Pulihkan" button while a recovery chance is
+// left this week. The chances line at the bottom always shows how many are left.
 
 package com.vantra.music.ui.screens.settings
 
@@ -18,6 +21,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -26,15 +30,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,25 +49,56 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.emptyPreferences
 import com.vantra.music.ui.component.OdometerNumber
 import com.vantra.music.ui.theme.InterFontFamily
 import com.vantra.music.utils.FlameTier
 import com.vantra.music.utils.StreakInfo
+import com.vantra.music.utils.StreakManager
+import com.vantra.music.utils.dataStore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val StreakCardBg = Color(0xFF0F0F0F)
 private val StreakGrey = Color(0xFF8A8A8A)
 
+/** The streak as the card shows it, plus the call that uses a recovery chance. */
+internal class StreakView(val info: StreakInfo, val onRecover: () -> Unit)
+
+/**
+ * Reads the recovery state from DataStore and turns the listening days into what the card shows.
+ * Used by the profile page in place of a plain StreakManager.compute().
+ */
 @Composable
-internal fun StreakCard(info: StreakInfo) {
-    val alive = info.current > 0
+internal fun rememberStreakView(listeningDays: List<Long>): StreakView {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val prefs by context.dataStore.data.collectAsState(initial = emptyPreferences())
+    val info = remember(listeningDays, prefs) {
+        StreakManager.evaluate(listeningDays, StreakManager.readState(prefs))
+    }
+    return remember(info, listeningDays) {
+        StreakView(info) {
+            scope.launch(Dispatchers.IO) {
+                StreakManager.recover(context.dataStore, listeningDays)
+            }
+        }
+    }
+}
+
+@Composable
+internal fun StreakCard(info: StreakInfo, onRecover: () -> Unit = {}) {
+    val gray = info.gray
+    val alive = info.current > 0 && !gray
     val tier = info.tier
 
     // pops in the first time the card is on screen
@@ -89,7 +126,7 @@ internal fun StreakCard(info: StreakInfo) {
                         fontSize = figureSp(44f * k),
                         fontWeight = FontWeight.Bold,
                         fontFamily = InterFontFamily,
-                        color = Color.White,
+                        color = if (gray) StreakGrey else Color.White,
                         letterSpacing = (-2).sp,
                     )
                     Text(
@@ -109,6 +146,7 @@ internal fun StreakCard(info: StreakInfo) {
         Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF474747)))
         Spacer(Modifier.height(12.dp))
         val status = when {
+            gray -> "Kamu melewatkan 1 hari. Pulihkan biar streak tetap aman."
             !alive -> "Streak putus. Dengerin hari ini buat nyalain lagi."
             !info.listenedToday -> "Dengerin hari ini biar apinya nggak padam."
             info.next != null -> "${info.daysToNext} hari lagi menuju api ${info.next!!.label}."
@@ -118,6 +156,21 @@ internal fun StreakCard(info: StreakInfo) {
             status,
             style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = StreakGrey),
         )
+        if (gray && info.chancesLeft > 0) {
+            Spacer(Modifier.height(10.dp))
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0xFF2A2A2A))
+                    .clickable(onClick = onRecover)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    "Pulihkan (sisa ${info.chancesLeft})",
+                    style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White),
+                )
+            }
+        }
         if (alive && info.next != null) {
             Spacer(Modifier.height(10.dp))
             Box(
@@ -136,6 +189,11 @@ internal fun StreakCard(info: StreakInfo) {
                 )
             }
         }
+        Spacer(Modifier.height(10.dp))
+        Text(
+            "Kesempatan pemulihan minggu ini: ${info.chancesLeft} dari ${StreakManager.RECOVERIES_PER_WEEK}",
+            style = TextStyle(fontFamily = InterFontFamily, fontWeight = FontWeight.Medium, fontSize = 11.sp, color = StreakGrey),
+        )
     }
 }
 

@@ -150,6 +150,16 @@ val ProfileJoinedEpochDayKey = longPreferencesKey("profileJoinedEpochDay")
 
 /** The hidden streak card: set once the user has listened 3 days in a row (the "streak is on" notification went out). */
 val StreakUnlockedKey = booleanPreferencesKey("streakUnlocked")
+/** the last flame tier (its first day) whose milestone notification went out, so each goes out once */
+val StreakNotifiedTierKey = intPreferencesKey("streakNotifiedTier")
+/** the Monday the recovery chances below belong to */
+val StreakRecoveryWeekKey = longPreferencesKey("streakRecoveryWeek")
+/** recovery chances used in that week, out of 2 */
+val StreakRecoveryUsedKey = intPreferencesKey("streakRecoveryUsed")
+/** epoch days filled by a recovery, comma-separated: they bridge a missed day but add no count */
+val StreakRecoveredDaysKey = stringPreferencesKey("streakRecoveredDays")
+/** the missed day the recovery warning already went out for */
+val StreakWarnedDayKey = longPreferencesKey("streakWarnedDay")
 
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 val IpVersionKey = stringPreferencesKey("ipVersion")
