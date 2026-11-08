@@ -32,7 +32,7 @@ data class AudioscrobblerSession(val name: String, val key: String)
 
 /** what the service said went wrong, by its own error codes (see the last.fm api docs) */
 class AudioscrobblerException(val code: Int, message: String) : Exception(message) {
-    /** the account took back mochy's access or the session is gone: sign in again */
+    /** the account took back vantra's access or the session is gone: sign in again */
     val isSignedOut: Boolean get() = code == INVALID_SESSION
 
     /** turned down for good, like a song with no title, sending it again won't help */
@@ -66,7 +66,7 @@ class Audioscrobbler(
     /** false in a build made without this service's api key, which can't sign anyone in */
     val isConfigured: Boolean get() = apiKey.isNotEmpty() && secret.isNotEmpty()
 
-    /** signs in straight from mochy's own form, the password only goes to the service over https and isn't kept */
+    /** signs in straight from vantra's own form, the password only goes to the service over https and isn't kept */
     suspend fun getMobileSession(username: String, password: String): AudioscrobblerSession {
         val login = if (signsInWithToken) {
             mapOf("authToken" to md5(username.lowercase(Locale.ROOT) + md5(password)))
@@ -157,7 +157,7 @@ class Audioscrobbler(
         /** the most plays one track.scrobble request takes */
         const val MAX_BATCH = 50
 
-        private const val USER_AGENT = "Auralyric"
+        private const val USER_AGENT = "Vantra"
 
         private val client by lazy {
             HttpClient(OkHttp) {

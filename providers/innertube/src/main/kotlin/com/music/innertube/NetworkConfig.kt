@@ -57,7 +57,7 @@ object NetworkConfig {
                 retryOnConnectionFailure(true)
 
                 if (enableCache) {
-                    val cacheDirectory = cacheDir ?: File(System.getProperty("java.io.tmpdir"), "auralyric_http_cache")
+                    val cacheDirectory = cacheDir ?: File(System.getProperty("java.io.tmpdir"), "vantra_http_cache")
                     cache(okhttp3.Cache(cacheDirectory, CACHE_SIZE_MB))
                 }
             }

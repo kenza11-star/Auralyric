@@ -81,11 +81,11 @@ internal object MusixmatchBrowser {
     // true once the new page has fully arrived and [ready] holds on it; false when it failed, hit the sign-in wall, or ran out of time
     private suspend fun load(view: WebView, url: String, ready: String): Boolean {
         // the tab is reused: a mark on the old page tells it apart from the new one, even when musixmatch redirects
-        if (view.url != null) evaluate(view, "window.mochyOld=true")
+        if (view.url != null) evaluate(view, "window.vantraOld=true")
         val host = Uri.parse(url).host
         tabClient.failedHost = null
         view.loadUrl(url)
-        val script = "(function(){if(window.mochyOld)return 'wait';var h=location.hostname;if(h=='auth.musixmatch.com')return 'wall';" +
+        val script = "(function(){if(window.vantraOld)return 'wait';var h=location.hostname;if(h=='auth.musixmatch.com')return 'wall';" +
             "return h==${JsonPrimitive(host)}&&document.readyState!='loading'&&($ready)?'ready':'wait';})()"
         val outcome = withTimeoutOrNull(LoadTimeoutMs) {
             var state = "wait"

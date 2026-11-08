@@ -25,7 +25,7 @@ internal val lyricsHttp by lazy {
             requestTimeoutMillis = 10_000
         }
         // says who's asking so the server owner can reach us instead of blocking us
-        install(UserAgent) { agent = "Auralyric (+https://github.com/realidkroo/Auralyric-Music)" }
+        install(UserAgent) { agent = "Vantra (+https://github.com/realidkroo/Vantra-Music)" }
         install(ContentNegotiation) {
             json(LyricsJson)
             json(LyricsJson, ContentType.Text.Plain)

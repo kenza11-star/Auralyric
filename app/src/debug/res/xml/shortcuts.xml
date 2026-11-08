@@ -6,9 +6,9 @@
         android:shortcutId="search"
         android:shortcutShortLabel="@string/search">
         <intent
-            android:action="com.mochyy.mochymusic.action.SEARCH"
-            android:targetClass="com.mochyy.mochymusic.MainActivity"
-            android:targetPackage="com.mochyy.mochymusic.debug" />
+            android:action="com.vantra.music.action.SEARCH"
+            android:targetClass="com.vantra.music.MainActivity"
+            android:targetPackage="com.vantra.music.debug" />
     </shortcut>
     <shortcut
         android:enabled="true"
@@ -16,8 +16,8 @@
         android:shortcutId="library"
         android:shortcutShortLabel="@string/filter_library">
         <intent
-            android:action="com.mochyy.mochymusic.action.LIBRARY"
-            android:targetClass="com.mochyy.mochymusic.MainActivity"
-            android:targetPackage="com.mochyy.mochymusic.debug" />
+            android:action="com.vantra.music.action.LIBRARY"
+            android:targetClass="com.vantra.music.MainActivity"
+            android:targetPackage="com.vantra.music.debug" />
     </shortcut>
 </shortcuts>

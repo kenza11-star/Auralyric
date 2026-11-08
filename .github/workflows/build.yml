@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build_release:
-    name: Build Auralyric (arm64 GMS release)
+    name: Build Vantra (arm64 GMS release)
     runs-on: ubuntu-latest
     timeout-minutes: 90
     if: github.actor != 'dependabot[bot]'
@@ -66,5 +66,5 @@ jobs:
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: auralyric-arm64-release
+          name: vantra-arm64-release
           path: app/build/outputs/apk/arm64Gms/release/*.apk

@@ -1,12 +1,12 @@
-# Making modules for Auralyric
+# Making modules for Vantra
 
-A **module** adds something to Auralyric without an app update. One module can add any mix of these:
+A **module** adds something to Vantra without an app update. One module can add any mix of these:
 
-| It adds | What Auralyric does with it |
+| It adds | What Vantra does with it |
 |---|---|
 | **Songs** | Asks it for the song that's playing (in the provider order), and plays the stream itself, so every Audio Lab effect still works. |
 | **Lyrics** | Puts it first among the lyrics sources while it's on. |
-| **A look** | Restyles Auralyric while it's on: its settings (player style, colours, blur, corners…), **a player of its own**, **its own font**, **pictures** and **pages**. Everything goes back the way it was when it's turned off. |
+| **A look** | Restyles Vantra while it's on: its settings (player style, colours, blur, corners…), **a player of its own**, **its own font**, **pictures** and **pages**. Everything goes back the way it was when it's turned off. |
 
 One switch turns a module on or off. Off means gone everywhere: from Audio Quality, the provider order, the download order, the lyrics sources and the look. Every new module starts **off**, so adding one never changes anything until the user turns it on.
 
@@ -22,9 +22,9 @@ One switch turns a module on or off. Off means gone everywhere: from Audio Quali
 6. [Zip modules](#6-zip-modules)
 7. [Putting your module in the catalog](#7-putting-your-module-in-the-catalog)
 8. [Testing your module](#8-testing-your-module)
-9. [How Auralyric uses your module](#9-how-auralyric-uses-your-module)
+9. [How Vantra uses your module](#9-how-vantra-uses-your-module)
 10. [Rules to follow](#10-rules-to-follow)
-11. [For Auralyric developers: changing the module interface](#11-for-auralyric-developers-changing-the-module-interface)
+11. [For Vantra developers: changing the module interface](#11-for-vantra-developers-changing-the-module-interface)
 12. [Troubleshooting](#12-troubleshooting)
 
 ---
@@ -33,13 +33,13 @@ One switch turns a module on or off. Off means gone everywhere: from Audio Quali
 
 | You want to… | Make a… | Needs a server? | Who can make it |
 |---|---|---|---|
-| Restyle Auralyric, design your own player, add pages | **Look**, as a zip (or a `manifest.json` link) | No | Anyone |
+| Restyle Vantra, design your own player, add pages | **Look**, as a zip (or a `manifest.json` link) | No | Anyone |
 | Add songs or lyrics from a service | **Web module**: a link to a small HTTP service | Yes | Anyone |
 | Share a web module as one file | **Zip with a `url`** | Yes (the service it names) | Anyone |
 | Add another Monochrome server | Not a module: Monochrome's page, **Servers** | No | Anyone |
-| Ship code that runs inside Auralyric | **Built-in module** or **module app** | No | Auralyric developers only |
+| Ship code that runs inside Vantra | **Built-in module** or **module app** | No | Vantra developers only |
 
-Nothing from a look, a web module or a zip runs inside Auralyric. They only hand back JSON, stream links and look values, so anyone can make one and nobody has to be trusted with the app. Code that runs inside Auralyric (built-in modules and module apps) is only loaded when it's signed with Auralyric's own key. See [section 11](#11-for-auralyric-developers-changing-the-module-interface)
+Nothing from a look, a web module or a zip runs inside Vantra. They only hand back JSON, stream links and look values, so anyone can make one and nobody has to be trusted with the app. Code that runs inside Vantra (built-in modules and module apps) is only loaded when it's signed with Vantra's own key. See [section 11](#11-for-vantra-developers-changing-the-module-interface)
 
 ---
 
@@ -67,9 +67,9 @@ Nothing from a look, a web module or a zip runs inside Auralyric. They only hand
    - **Windows:** right-click the folder → *Send to* → *Compressed (zipped) folder*
    - **Terminal:** `cd midnight && zip midnight.zip manifest.json`
 
-3. Send `midnight.zip` to your phone. In Auralyric go to **Settings → Modules → Find more sources → Add from a file → Choose a .zip**.
+3. Send `midnight.zip` to your phone. In Vantra go to **Settings → Modules → Find more sources → Add from a file → Choose a .zip**.
 
-4. Auralyric shows what the module adds. Tap **Add**, open its page and turn it on. Turn it off and your own settings come back.
+4. Vantra shows what the module adds. Tap **Add**, open its page and turn it on. Turn it off and your own settings come back.
 
 That's a whole module
 
@@ -81,7 +81,7 @@ Every module, whether it comes as a link or a zip, describes itself with one `ma
 
 | Field | Required | What it's for |
 |---|---|---|
-| `id` | `id` or `name` | A short stable name, like `my-flac`. Auralyric turns it into `web.my-flac` (link) or `local.my-flac` (zip), so it can never replace a built-in module. **Keep it the same forever**: adding a module with the same id again updates it instead of adding a second copy. |
+| `id` | `id` or `name` | A short stable name, like `my-flac`. Vantra turns it into `web.my-flac` (link) or `local.my-flac` (zip), so it can never replace a built-in module. **Keep it the same forever**: adding a module with the same id again updates it instead of adding a second copy. |
 | `name` | `id` or `name` | What people see. |
 | `version` | No | Shown on the module's page. Bump it when you change anything. |
 | `description` | No | One line about what it does. |
@@ -97,9 +97,9 @@ Every module, whether it comes as a link or a zip, describes itself with one `ma
 Two rules worth knowing:
 
 - **A manifest with no `resources` and nothing that changes the look (`look`, `player`, `font`, `pages`) is read as a song source**, because that's what most services of this kind are.
-- **A website's own `manifest.json` is turned away.** Websites have one for "install to home screen", with `start_url`, `display`, `short_name` or `icons`. If your manifest has any of those and none of `resources`, `look`, `player`, `font` or `pages`, Auralyric says "That's a website, not a module". Don't use those field names in a module manifest.
+- **A website's own `manifest.json` is turned away.** Websites have one for "install to home screen", with `start_url`, `display`, `short_name` or `icons`. If your manifest has any of those and none of `resources`, `look`, `player`, `font` or `pages`, Vantra says "That's a website, not a module". Don't use those field names in a module manifest.
 
-Fields Auralyric doesn't know are ignored, btw
+Fields Vantra doesn't know are ignored, btw
 
 ---
 
@@ -109,7 +109,7 @@ A look can do five things, in any mix:
 
 | | Where it goes in `manifest.json` | Works from |
 |---|---|---|
-| [4.1 Change Auralyric's settings](#41-look-settings) | `look` | a zip / a link |
+| [4.1 Change Vantra's settings](#41-look-settings) | `look` | a zip / a link |
 | [4.2 Bring a player of its own](#42-a-player-of-your-own) | `player` | a zip / a link |
 | [4.3 Bring its own font](#43-your-own-font) | `font` | a zip only |
 | [4.4 Use its own pictures](#44-pictures) | paths in `player` and `pages` | a zip, or a link with pictures beside its manifest |
@@ -119,17 +119,17 @@ How looks behave:
 
 - **Only one look is on at a time** Turning a second one on turns the first off and gives its settings back first. A module with *only* pages doesn't count as a look here, so it can stay on next to one
 - **The user always wins.** If someone changes a setting by hand while your look is on, they keep their value when your look goes off.
-- **It survives restarts.** Auralyric remembers what each look replaced, so turning it off after a restart still gives the right settings back
-- **Nothing runs.** A look is a description. Auralyric draws it with its own parts, so it stays smooth on slow phones and can't break anything
+- **It survives restarts.** Vantra remembers what each look replaced, so turning it off after a restart still gives the right settings back
+- **Nothing runs.** A look is a description. Vantra draws it with its own parts, so it stays smooth on slow phones and can't break anything
 
 ### 4.1 Look settings
 
-A look may change **only** these settings, so a module can restyle Auralyric but never reach accounts, the network or playback. Values are written as text (`"true"`, `"12"`, `"FLAGSHIP"`). Keys must be spelled exactly as below, while style names may be any case. A value that's out of range is simply ignored
+A look may change **only** these settings, so a module can restyle Vantra but never reach accounts, the network or playback. Values are written as text (`"true"`, `"12"`, `"FLAGSHIP"`). Keys must be spelled exactly as below, while style names may be any case. A value that's out of range is simply ignored
 
 | Key | Values | What it changes |
 |---|---|---|
 | `playerStyle` | `FLAGSHIP`, `CLASSIC`, `TURNTABLE`, `VIDEO`, `IPOD`, `POSTER`, `TIMELINE`, `LYRICS`, `BEDSIDE`, `BEDSIDE_TILES`, `MODULE` | The now-playing screen. `MODULE` is your own player from 4.2, and is picked for you when you bring one. |
-| `homeStyle` | `AURALYRICY`, `LISTEN_NOW`, `HOP_IN` | The home page layout |
+| `homeStyle` | `VANTRAY`, `LISTEN_NOW`, `HOP_IN` | The home page layout |
 | `playlistStyle` | `FLOW`, `CLASSIC`, `MINIMAL` | How playlists and albums are laid out |
 | `thumbnailCornerRadius` | `0` to `45` | How round covers are |
 | `lyricsMotionStyle` | `MOTION`, `LEGACY`, `BORING`, `PLAIN` | How lyrics animate |
@@ -145,11 +145,11 @@ A look may change **only** these settings, so a module can restyle Auralyric but
 | `enableProgressiveBlur` | `true`, `false` | Blur that grows towards edges |
 | `elementBlur` | `true`, `false` | Blur on moving elements |
 
-A look made only of settings can also be added from a link to its `manifest.json`, for example a raw GitHub link like `https://raw.githubusercontent.com/you/midnight/main/manifest.json`. Want a setting that isn't in this list? It has to be added to Auralyric first, see [section 11](#adding-a-look-setting).
+A look made only of settings can also be added from a link to its `manifest.json`, for example a raw GitHub link like `https://raw.githubusercontent.com/you/midnight/main/manifest.json`. Want a setting that isn't in this list? It has to be added to Vantra first, see [section 11](#adding-a-look-setting).
 
 ### 4.2 A player of your own
 
-`player` describes a whole now-playing screen. While your look is on, it's the first style in the player's style selector (hold the player to open it) under the name you give it. Auralyric switches to it when your look turns on, and back to the user's style when it goes off.
+`player` describes a whole now-playing screen. While your look is on, it's the first style in the player's style selector (hold the player to open it) under the name you give it. Vantra switches to it when your look turns on, and back to the user's style when it goes off.
 
 Your player gets everything the other styles have, for free: swipe sideways to change song (your cover and words ride along), tap to play or pause, swipe down to close, the ••• menu (lyrics, song info, turning sideways), and its clocks resting while it's hidden.
 
@@ -218,7 +218,7 @@ Every background takes `"dim"`, from `0` to `0.9`, a black veil over it so text 
 | `row` | Its own `blocks`, side by side | `blocks` · `gap` (`12`). Words, bars and columns share the width; covers, pictures and buttons keep their size. |
 | `column` | Its own `blocks`, stacked (handy inside a row) | `blocks` · `gap` (`12`) |
 
-Rows and columns can go three deep. A block Auralyric doesn't know is skipped, so a newer layout still opens on an older Auralyric.
+Rows and columns can go three deep. A block Vantra doesn't know is skipped, so a newer layout still opens on an older Vantra.
 
 **Text fields** (for `title`, `artist`, `album`, `text`): `size` (`8`–`72`), `weight` (`thin`, `light`, `normal`, `medium`, `semibold`, `bold`, `black`), `color`, `lines` (`1`–`4`, longer text ends in "…"), `upper` (`true` for CAPITALS), `align` (`start`, `center`, `end`).
 
@@ -353,9 +353,9 @@ vinyl-night.zip
 
 ## 5. A module that plays songs or lyrics (a web module)
 
-A web module is a small HTTP service. Auralyric calls it with plain **GET** requests and reads JSON back. People add it by pasting its base link (`https://my-flac.example`) or the link to its manifest (`https://my-flac.example/manifest.json`). Both work.
+A web module is a small HTTP service. Vantra calls it with plain **GET** requests and reads JSON back. People add it by pasting its base link (`https://my-flac.example`) or the link to its manifest (`https://my-flac.example/manifest.json`). Both work.
 
-Every request carries `Accept: application/json` and `User-Agent: Auralyric`.
+Every request carries `Accept: application/json` and `User-Agent: Vantra`.
 
 ### `GET {base}/manifest.json`
 
@@ -375,7 +375,7 @@ Every request carries `Accept: application/json` and `User-Agent: Auralyric`.
 
 ### `GET {base}/search?q=<artist title>&quality=…`
 
-Auralyric searches with the **first artist** and the **title without extras**: no "(feat. …)", "(Official Video)" or "- Remastered". For example, `q=benny%20blanco%20eastside`.
+Vantra searches with the **first artist** and the **title without extras**: no "(feat. …)", "(Official Video)" or "- Remastered". For example, `q=benny%20blanco%20eastside`.
 
 ```json
 {
@@ -393,9 +393,9 @@ Auralyric searches with the **first artist** and the **title without extras**: n
 }
 ```
 
-- `id` and `title` are required. Give `artist`, `album`, `duration` and `isrc` too: Auralyric picks the right recording with its own matcher, and these are how it tells the studio song from a remix, a live take or a sped-up version.
+- `id` and `title` are required. Give `artist`, `album`, `duration` and `isrc` too: Vantra picks the right recording with its own matcher, and these are how it tells the studio song from a remix, a live take or a sped-up version.
 - `duration` is in **seconds** (milliseconds also work, anything over 10000 is read as ms).
-- `streamURL` is optional. When it's there, Auralyric skips the stream call below.
+- `streamURL` is optional. When it's there, Vantra skips the stream call below.
 - Return a handful of results (5–10), best first.
 
 ### `GET {base}/stream/{id}?quality=…`
@@ -413,19 +413,19 @@ Auralyric searches with the **first artist** and the **title without extras**: n
 
 - **What kind of stream:** `format` or `manifest` saying `hls`/`m3u8` plays it as HLS, `dash`/`mpd` as DASH. Anything else plays as one file. Byte ranges are welcome, since seeking uses them.
 - **Codec:** `codec` names it for the format badge: `flac`, `alac`, `aac`, `opus`, `mp3`, `eac3`, `eac3-joc`/`atmos`.
-- **Encrypted streams:** a stream marked `"encrypted": true` is passed over, because Auralyric has no keys for it.
-- **Sample rate:** give `sampleRate` and `bitDepth`. A FLAC the phone can't decode at that rate is passed over instead of playing silence. Without them, Auralyric reads "96 kHz" and "24-bit" out of `quality`.
+- **Encrypted streams:** a stream marked `"encrypted": true` is passed over, because Vantra has no keys for it.
+- **Sample rate:** give `sampleRate` and `bitDepth`. A FLAC the phone can't decode at that rate is passed over instead of playing silence. Without them, Vantra reads "96 kHz" and "24-bit" out of `quality`.
 - **Redirects:** `url` may redirect (a 302 or 307 to a CDN is fine).
 
 ### Quality and Dolby Atmos
 
 A web module that plays songs gets two choices on its page:
 
-- **Stream:** Lossless (default), Hi-Res, High or Low, sent as `quality=`. If your manifest declares a `quality` setting, Auralyric sends the option whose name matches best (`lossless`, `flac`, `hires`, `24bit`, `high`, `320`, `low`…). If it declares none, Auralyric sends TIDAL's names: `LOSSLESS`, `HI_RES_LOSSLESS`, `HIGH`, `LOW`.
+- **Stream:** Lossless (default), Hi-Res, High or Low, sent as `quality=`. If your manifest declares a `quality` setting, Vantra sends the option whose name matches best (`lossless`, `flac`, `hires`, `24bit`, `high`, `320`, `low`…). If it declares none, Vantra sends TIDAL's names: `LOSSLESS`, `HI_RES_LOSSLESS`, `HIGH`, `LOW`.
 - **Dolby Atmos:** Stereo (default) or Atmos. Atmos is only asked for when the phone can decode it (`atmos=auto`, or your declared `atmos` setting's "on" option). With Stereo, a declared `atmos` setting is sent as its "off" option.
-- In search results, mark an Atmos mix with `"atmos": true` (or `atmos`/`joc`/`ec+3` in `audioMode`, `audioModes`, `audioQuality` or `format`). Auralyric then picks the Atmos row or the stereo row to match the user's choice.
+- In search results, mark an Atmos mix with `"atmos": true` (or `atmos`/`joc`/`ec+3` in `audioMode`, `audioModes`, `audioQuality` or `format`). Vantra then picks the Atmos row or the stereo row to match the user's choice.
 
-Every other declared setting is sent as its `default` on every search and stream call. Auralyric has no form for them.
+Every other declared setting is sent as its `default` on every search and stream call. Vantra has no form for them.
 
 ### `GET {base}/lyrics?title=&artist=&album=&duration=`
 
@@ -446,7 +446,7 @@ Every other declared setting is sent as its `default` on every search and stream
 A Cloudflare Worker that serves your own files (free, no server to look after):
 
 ```js
-// worker.js: a tiny Auralyric module
+// worker.js: a tiny Vantra module
 const SONGS = [
   { id: "1", title: "My Song", artist: "Me", album: "Demo", duration: 201, url: "https://example.com/my-song.flac" },
 ];
@@ -475,7 +475,7 @@ export default {
 };
 ```
 
-Deno Deploy, Vercel and Netlify work the same way. **GitHub alone can't host a song or lyrics module.** It only serves files, and Auralyric needs an answer that depends on the song it asks for. GitHub is fine for looks.
+Deno Deploy, Vercel and Netlify work the same way. **GitHub alone can't host a song or lyrics module.** It only serves files, and Vantra needs an answer that depends on the song it asks for. GitHub is fine for looks.
 
 ---
 
@@ -496,7 +496,7 @@ my-module.zip
     └── manifest.json    ← or inside one folder, the way most zip tools pack a folder
 ```
 
-- **Pictures and fonts are unpacked, nothing else.** `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.ttf` and `.otf` files in the manifest's folder (and the folders under it) are copied into Auralyric when the zip is added, keeping their paths. Everything else, like code or text files, is ignored. Hidden macOS files (`__MACOSX`, `._…`) are skipped.
+- **Pictures and fonts are unpacked, nothing else.** `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.ttf` and `.otf` files in the manifest's folder (and the folders under it) are copied into Vantra when the zip is added, keeping their paths. Everything else, like code or text files, is ignored. Hidden macOS files (`__MACOSX`, `._…`) are skipped.
 - **A zip without a `url` lives on the phone.** It never touches the network, and its page has no server to check.
 - **A zip that plays songs or lyrics needs a `url`:**
 
@@ -509,11 +509,11 @@ my-module.zip
   }
   ```
 
-  It's then added just like pasting `https://my-flac.example`: the same calls, the same quality choices. The difference is that the manifest comes from the file. Without a `url`, Auralyric says the zip "doesn't say where from".
-- **Limits:** the manifest must be under 256 KB, and Auralyric only looks through the first 200 entries for it. Pictures and fonts: up to 200 files, 8 MB each and 30 MB in all; a file over the limit is left out.
+  It's then added just like pasting `https://my-flac.example`: the same calls, the same quality choices. The difference is that the manifest comes from the file. Without a `url`, Vantra says the zip "doesn't say where from".
+- **Limits:** the manifest must be under 256 KB, and Vantra only looks through the first 200 entries for it. Pictures and fonts: up to 200 files, 8 MB each and 30 MB in all; a file over the limit is left out.
 - **Removing** the module deletes its unpacked pictures and fonts too.
 - **Updating:** importing a zip with the same `id` again updates the module.
-- **Backups:** modules added from a zip are kept in Auralyric's backup like every other module.
+- **Backups:** modules added from a zip are kept in Vantra's backup like every other module.
 
 ---
 
@@ -539,7 +539,7 @@ my-module.zip
 - Tapping a catalog entry still checks the real manifest and shows what it adds before anything is installed.
 - Pull requests are reviewed by hand. A module that doesn't work, describes itself wrongly, pretends to be someone else or does anything shady isn't merged.
 
-Want to share a module without the catalog? Post its link or its zip in [Auralyric's Bar on Discord](https://discord.gg/NTmqVphbRY). The banner at the top of the Modules page goes there.
+Want to share a module without the catalog? Post its link or its zip in [Vantra's Bar on Discord](https://discord.gg/NTmqVphbRY). The banner at the top of the Modules page goes there.
 
 ---
 
@@ -555,7 +555,7 @@ curl -I "<the url your stream call returned>"     # should be 200 or 206, an aud
 curl "https://my-flac.example/lyrics?title=Eastside&artist=benny%20blanco&duration=173"
 ```
 
-**In Auralyric**, open the module's page:
+**In Vantra**, open the module's page:
 
 - **Check server** asks for your manifest again and says whether it answered. The icon spins while it checks.
 - **Test playback** runs every step on the phone with the song that's playing (or a known one): finding the song, opening the stream, getting a license if the stream needs one, and decoding two seconds, muted. Each step says what went wrong.
@@ -571,20 +571,20 @@ adb logcat -s ModuleTest SourceModules
 
 ---
 
-## 9. How Auralyric uses your module
+## 9. How Vantra uses your module
 
 ### Playing
 
 **Settings → Audio Lab → Audio Quality → Provider** is the provider order. Each song plays from the first provider that's on and has it. YouTube Music can sit anywhere in the order, or be switched off.
 
-For each song, Auralyric:
+For each song, Vantra:
 
 1. Searches your module (`/search`), and picks the matching recording with its matcher.
 2. Asks for the stream (`/stream/{id}`), unless the search already gave a `streamURL`.
 3. Passes over a stream the phone can't decode, and one that's encrypted.
 4. Plays it, or moves on to the next provider.
 
-Auralyric remembers a song your module doesn't have for 30 minutes, so it doesn't search for it again on every play. A module that doesn't answer is left alone for 10 minutes, then tried again.
+Vantra remembers a song your module doesn't have for 30 minutes, so it doesn't search for it again on every play. A module that doesn't answer is left alone for 10 minutes, then tried again.
 
 ### Downloading
 
@@ -602,10 +602,10 @@ Auralyric remembers a song your module doesn't have for 30 minutes, so it doesn'
 For everyone making a module:
 
 - [ ] **Use https** for every link: manifest, service and streams.
-- [ ] **Answer fast.** Auralyric waits 12 seconds to connect and 20 seconds for an answer, then moves on. A slow module makes every song wait.
+- [ ] **Answer fast.** Vantra waits 12 seconds to connect and 20 seconds for an answer, then moves on. A slow module makes every song wait.
 - [ ] **Answer with JSON** in the shapes above, with `Content-Type: application/json`. Return an error status (404, 503…) when something's wrong, never a web page with 200.
 - [ ] **Keep ids stable.** The `id` you return from search must work in `/stream/{id}`, and your manifest's `id` must never change.
-- [ ] **Be honest in search results.** Real titles, every artist, real durations. A wrong duration makes Auralyric pick the wrong recording or none.
+- [ ] **Be honest in search results.** Real titles, every artist, real durations. A wrong duration makes Vantra pick the wrong recording or none.
 - [ ] **No encrypted streams.** They're skipped anyway.
 - [ ] **Bump `version`** whenever you change your manifest.
 - [ ] **Never put secrets in a manifest you share.** If your link carries a personal key (some debrid services put an API key in the path), that link *is* a password. Anyone who has it can use your account. Don't post it publicly, and get a new key if you did.
@@ -614,15 +614,15 @@ For everyone making a module:
 
 ---
 
-## 11. For Auralyric developers: changing the module interface
+## 11. For Vantra developers: changing the module interface
 
-This part is for people working on Auralyric itself. Follow the repo's `CLAUDE.md` everywhere: one-line lowercase code comments, and text people see goes in `res/values/*.xml` (English only, never touch `values-*/`).
+This part is for people working on Vantra itself. Follow the repo's `CLAUDE.md` everywhere: one-line lowercase code comments, and text people see goes in `res/values/*.xml` (English only, never touch `values-*/`).
 
 ### Where things live
 
 | What | Where |
 |---|---|
-| The contract every module follows | `modules/api/src/main/kotlin/com/auralyric/auralyricmusic/module/AuralyricModule.kt` |
+| The contract every module follows | `modules/api/src/main/kotlin/com/vantra/vantra/module/VantraModule.kt` |
 | The matcher every module uses | `modules/api/.../module/TrackMatcher.kt` |
 | Built-in modules | `modules/applemusic`, `modules/monochrome`, `modules/jiosaavn` |
 | Every module, its switch and choices; adding from a link or a zip | `app/.../modules/ModuleRegistry.kt` |
@@ -640,23 +640,23 @@ This part is for people working on Auralyric itself. Follow the repo's `CLAUDE.m
 
 ### The contract and its version
 
-`:modules:api` is plain Kotlin on purpose: no Android, no Media3, no HTTP library. That way a module can be built as its own APK and loaded at runtime. It has a version, `MODULE_API_VERSION` (now `3`). A module app built for a different version is skipped with a log line, so it can't crash Auralyric.
+`:modules:api` is plain Kotlin on purpose: no Android, no Media3, no HTTP library. That way a module can be built as its own APK and loaded at runtime. It has a version, `MODULE_API_VERSION` (now `3`). A module app built for a different version is skipped with a log line, so it can't crash Vantra.
 
 **When to bump `MODULE_API_VERSION`:**
 
 | Change | Bump? |
 |---|---|
 | Add a new optional interface (like `ServerListModule`) | No |
-| Add a field with a default to a class only Auralyric creates (like `HttpResponse.headers`) | No |
+| Add a field with a default to a class only Vantra creates (like `HttpResponse.headers`) | No |
 | Rename, remove or change the type of anything a module calls or implements | **Yes** |
 | Add a method to an interface modules implement, even one with a default body | **Yes**, an older module app was built without it |
 | Change what a value means (units, ranges) | **Yes** |
 
-After a bump, every module app has to be rebuilt against the new `:modules:api`. Built-in modules are rebuilt with Auralyric anyway.
+After a bump, every module app has to be rebuilt against the new `:modules:api`. Built-in modules are rebuilt with Vantra anyway.
 
 ### Adding a look setting
 
-1. Add the key to `LookSetting` in `AuralyricModule.kt`, with a one-line comment saying its values.
+1. Add the key to `LookSetting` in `VantraModule.kt`, with a one-line comment saying its values.
 2. Add it to `ModuleLooks.Settings` in the app, with the preference key it writes and a parser that turns away anything out of range (`enumName<…>`, `number(it, min..max)` or `bool`).
 3. Add a row to the table in [section 4](#41-look-settings).
 
@@ -669,7 +669,7 @@ A look can never reach anything that isn't in `ModuleLooks.Settings`. That's the
 3. Draw it in `ModulePlayerStyle.kt` or `ModulePageScreen.kt`. Follow `CLAUDE.md`'s smoothness rules: read the playback position and anything else that changes every frame inside `drawBehind`/`graphicsLayer`, never in composition; pause any loop while the style is hidden (`rememberStyleShowing`, `LocalAppContentObscured`) and wrap it in `damageBoundary()`; use the GlassKit helpers for blur.
 4. Add a case to `app/src/test/.../modules/skin/SkinParserTest.kt`, and a row to [section 4](#4-changing-the-interface-looks-players-fonts-and-pages).
 
-An older Auralyric skips a block it doesn't know, so adding one never breaks older layouts. Renaming or removing one does, so don't.
+An older Vantra skips a block it doesn't know, so adding one never breaks older layouts. Renaming or removing one does, so don't.
 
 ### Changing what a link or zip module can do
 
@@ -687,14 +687,14 @@ An older Auralyric skips a block it doesn't know, so adding one never breaks old
 
 ### Module apps
 
-A module app is an APK whose code runs inside Auralyric. It needs:
+A module app is an APK whose code runs inside Vantra. It needs:
 
-- a `<service>` answering the intent `com.auralyric.auralyricmusic.SOURCE_MODULE`
-- `<meta-data android:name="com.auralyric.auralyricmusic.module.entry" android:value="your.module.EntryClass" />` on that service
-- an entry class with a no-argument constructor that implements `AuralyricModule`
-- to be **signed with Auralyric's own key**, and built for the same `MODULE_API_VERSION`
+- a `<service>` answering the intent `com.vantra.music.SOURCE_MODULE`
+- `<meta-data android:name="com.vantra.music.module.entry" android:value="your.module.EntryClass" />` on that service
+- an entry class with a no-argument constructor that implements `VantraModule`
+- to be **signed with Vantra's own key**, and built for the same `MODULE_API_VERSION`
 
-Build against `:modules:api` as `compileOnly`, since Auralyric already has those classes. A module app replaces the built-in module with the same id, so a built-in module can be updated on its own.
+Build against `:modules:api` as `compileOnly`, since Vantra already has those classes. A module app replaces the built-in module with the same id, so a built-in module can be updated on its own.
 
 ### Checking your change
 
@@ -707,15 +707,15 @@ Build against `:modules:api` as `compileOnly`, since Auralyric already has those
 
 | What you see | Why, and what to do |
 |---|---|
-| "That's a website, not a module" | You pasted a website. Auralyric needs a module's link or its `manifest.json`. A Monochrome site goes on Monochrome's page under **Servers**. |
-| "That link answered, but it isn't a module Auralyric can use" | The manifest has no `id` and no `name`, isn't valid JSON, or adds nothing. |
+| "That's a website, not a module" | You pasted a website. Vantra needs a module's link or its `manifest.json`. A Monochrome site goes on Monochrome's page under **Servers**. |
+| "That link answered, but it isn't a module Vantra can use" | The manifest has no `id` and no `name`, isn't valid JSON, or adds nothing. |
 | "That file isn't a module" | The zip has no `manifest.json` at its root or one folder in, or isn't a zip. |
 | "…its .zip doesn't say where from" | Your zip lists `search`, `stream` or `lyrics` but has no `url`. |
 | The test finds the song but it never plays from your module | Check the stream call with `curl -I`: it must give audio (200 or 206), not a web page or an error. Check that the codec and sample rate are ones the phone can decode. |
 | Songs come from YouTube instead | Your module is below YouTube in the provider order, it's switched off, or it was skipped for 10 minutes after not answering. `adb logcat -s SourceModules` says which. |
 | Downloads don't use your module | Check the **download order**, not the provider order. Also, an HLS/DASH stream can't be downloaded: give one whole file. |
 | The look didn't change something | The key isn't in [section 4.1](#41-look-settings), the value is out of range, or the user changed that setting by hand. |
-| My player doesn't show up | Your look has to be **on**. `player` needs at least one block Auralyric knows. Then hold the player: your style is the first in the selector. |
+| My player doesn't show up | Your look has to be **on**. `player` needs at least one block Vantra knows. Then hold the player: your style is the first in the selector. |
 | A block is missing from my player | Its `type` is misspelled or unknown, so it was skipped. Check the tables in [4.2](#42-a-player-of-your-own). |
 | My picture doesn't show | The path is relative to `manifest.json` and case-sensitive, and the file must be `.png`, `.jpg`, `.webp` or `.gif` under 8 MB. For a link module, the picture must be reachable next to the manifest. |
 | My font isn't used | Fonts only work from a zip, as `.ttf` or `.otf`, and the `regular` path must point at the file. A broken font is skipped. |

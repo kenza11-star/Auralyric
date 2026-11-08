@@ -1,6 +1,6 @@
-package com.mochyy.mochymusic.betterlyrics
+package com.vantra.music.betterlyrics
 
-import com.mochyy.mochymusic.betterlyrics.models.TTMLResponse
+import com.vantra.music.betterlyrics.models.TTMLResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -37,7 +37,7 @@ object BetterLyrics {
             }
 
             // says who's asking so the server owner can reach us instead of blocking us
-            install(UserAgent) { agent = "Auralyric (+https://github.com/realidkroo/Auralyric-Music)" }
+            install(UserAgent) { agent = "Vantra (+https://github.com/realidkroo/Vantra-Music)" }
 
             expectSuccess = false
         }

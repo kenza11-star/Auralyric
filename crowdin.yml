@@ -2,8 +2,8 @@
 files:
   - source: /app/src/main/res/values/strings.xml
     translation: /app/src/main/res/values-%android_code%/strings.xml
-  - source: /app/src/main/res/values/mochy_strings.xml
-    translation: /app/src/main/res/values-%android_code%/mochy_strings.xml
+  - source: /app/src/main/res/values/vantra_strings.xml
+    translation: /app/src/main/res/values-%android_code%/vantra_strings.xml
   - source: /app/src/main/res/values/app_language.xml
     translation: /app/src/main/res/values-%android_code%/app_language.xml
   - source: /app/src/main/res/values/settings_language.xml

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mochyy.mochymusic.artistvideo"
+    namespace = "com.vantra.music.artistvideo"
     compileSdk = 36
 
     defaultConfig {

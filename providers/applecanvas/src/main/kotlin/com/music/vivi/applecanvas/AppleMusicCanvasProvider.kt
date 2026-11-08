@@ -1,7 +1,7 @@
-package com.mochyy.mochymusic.applecanvas
+package com.vantra.music.applecanvas
 
-import com.mochyy.mochymusic.canvas.CanvasArtwork
-import com.mochyy.mochymusic.canvas.CanvasMatch
+import com.vantra.music.canvas.CanvasArtwork
+import com.vantra.music.canvas.CanvasMatch
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
