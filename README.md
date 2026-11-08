@@ -56,13 +56,6 @@ Updating works the same way: install the new apk over the old one and your libra
 
 ---
 
-## Preview
-
-<img src="assets/banner.jpg" alt="Vantra preview" width="100%" />
-
-
----
-
 ## How to build it yourself
 
 You only need this if you want to change the code. If you just want to use the app, use the install steps above.
