@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/ic_launcher_anim_vector">
+    <target android:name="wave1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="strokeAlpha"
+                android:valueType="floatType"
+                android:valueFrom="0.15"
+                android:valueTo="1"
+                android:duration="1600"
+                android:repeatCount="-1"
+                android:repeatMode="reverse" />
+        </aapt:attr>
+    </target>
+    <target android:name="wave2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="strokeAlpha"
+                android:valueType="floatType"
+                android:valueFrom="0.1"
+                android:valueTo="0.7"
+                android:startOffset="250"
+                android:duration="1600"
+                android:repeatCount="-1"
+                android:repeatMode="reverse" />
+        </aapt:attr>
+    </target>
+    <target android:name="wave3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="strokeAlpha"
+                android:valueType="floatType"
+                android:valueFrom="0.05"
+                android:valueTo="0.4"
+                android:startOffset="500"
+                android:duration="1600"
+                android:repeatCount="-1"
+                android:repeatMode="reverse" />
+        </aapt:attr>
+    </target>
+</animated-vector>
