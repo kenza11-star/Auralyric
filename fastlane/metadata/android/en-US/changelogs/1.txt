@@ -1,4 +1,4 @@
-Mochy Initial Release
+Vantra Initial Release
 
      Play music/videos from YouTube & YouTube Music (ad-free)
 

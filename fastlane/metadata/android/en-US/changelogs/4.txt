@@ -2,6 +2,6 @@ Updated to v3.0.6
 
     Added monochrome app icon
 
-    Updated Mochy Updater (only for mochy.apk builds)
+    Updated Vantra Updater (only for vantra.apk builds)
 
     Improved performance and stability
