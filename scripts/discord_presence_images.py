@@ -1,5 +1,5 @@
-# Draws the pictures Mochy hands to Discord for its Rich Presence: the play/pause badge with a
-# ring that fills as the song goes, and the Mochy logo. Discord fetches them straight from this
+# Draws the pictures Vantra hands to Discord for its Rich Presence: the play/pause badge with a
+# ring that fills as the song goes, and the Vantra logo. Discord fetches them straight from this
 # repo on GitHub, so after changing them, bump VERSION (Discord keeps old copies by URL) and the
 # same number in discord/PresenceImages.kt, then push.
 #
@@ -83,7 +83,7 @@ def main() -> None:
         for playing in (True, False):
             name = f"status_{'playing' if playing else 'paused'}_{step:02d}.png"
             badge(step / STEPS, playing).save(OUT / name, optimize=True)
-    logo().save(OUT / "mochy.png", optimize=True)
+    logo().save(OUT / "vantra.png", optimize=True)
     print(f"wrote {2 * (STEPS + 1) + 1} images to {OUT.relative_to(ROOT)}")
 
 

@@ -1,6 +1,6 @@
 // usb_pass.cpp
 
-// mochy's own usb audio driver: android hands over the dac's file descriptor, this takes the dac from the kernel's driver
+// vantra's own usb audio driver: android hands over the dac's file descriptor, this takes the dac from the kernel's driver
 // and streams isochronous packets at the song's own rate, nothing mixed or scaled on the way
 
 #include <jni.h>
@@ -359,7 +359,7 @@ Stream *streamOf(jlong handle) { return reinterpret_cast<Stream *>(handle); }
 extern "C" {
 
 JNIEXPORT jlong JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbOpen(JNIEnv *env, jobject, jint fd, jintArray plans, jint bcdUsb) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbOpen(JNIEnv *env, jobject, jint fd, jintArray plans, jint bcdUsb) {
     jsize count = env->GetArrayLength(plans);
     if (count <= 0 || count % kPlanInts != 0) {
         throwState(env, "no way to stream to this dac");
@@ -392,18 +392,18 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbOpen(JNIEnv *env, j
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbChosen(JNIEnv *, jobject, jlong handle) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbChosen(JNIEnv *, jobject, jlong handle) {
     return streamOf(handle)->chosen;
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbCapacity(JNIEnv *, jobject, jlong handle) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbCapacity(JNIEnv *, jobject, jlong handle) {
     Stream *s = streamOf(handle);
     return static_cast<jint>(s->ring.size() / s->frameBytes);
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbWrite(JNIEnv *env, jobject, jlong handle, jobject buffer, jint offset, jint length) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbWrite(JNIEnv *env, jobject, jlong handle, jobject buffer, jint offset, jint length) {
     Stream *s = streamOf(handle);
     auto *data = static_cast<uint8_t *>(env->GetDirectBufferAddress(buffer));
     if (!data) {
@@ -426,7 +426,7 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbWrite(JNIEnv *env, 
 }
 
 JNIEXPORT void JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbPlay(JNIEnv *env, jobject, jlong handle, jboolean playing) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbPlay(JNIEnv *env, jobject, jlong handle, jboolean playing) {
     Stream *s = streamOf(handle);
     std::lock_guard<std::mutex> guard(s->lock);
     if (!s->error.empty()) {
@@ -437,7 +437,7 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbPlay(JNIEnv *env, j
 }
 
 JNIEXPORT void JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbFlush(JNIEnv *, jobject, jlong handle) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbFlush(JNIEnv *, jobject, jlong handle) {
     Stream *s = streamOf(handle);
     std::lock_guard<std::mutex> guard(s->lock);
     s->playing = false;
@@ -449,7 +449,7 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbFlush(JNIEnv *, job
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbPlayed(JNIEnv *env, jobject, jlong handle) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbPlayed(JNIEnv *env, jobject, jlong handle) {
     Stream *s = streamOf(handle);
     std::lock_guard<std::mutex> guard(s->lock);
     if (!s->error.empty()) {
@@ -460,7 +460,7 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbPlayed(JNIEnv *env,
 }
 
 JNIEXPORT jint JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbControl(JNIEnv *env, jobject, jlong handle, jint type, jint request, jint value, jint index, jbyteArray data) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbControl(JNIEnv *env, jobject, jlong handle, jint type, jint request, jint value, jint index, jbyteArray data) {
     Stream *s = streamOf(handle);
     jsize length = env->GetArrayLength(data);
     std::vector<uint8_t> bytes(static_cast<size_t>(length));
@@ -472,7 +472,7 @@ Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbControl(JNIEnv *env
 }
 
 JNIEXPORT void JNICALL
-Java_com_mochyy_mochymusic_playback_audio_pass_PassNative_usbClose(JNIEnv *, jobject, jlong handle) {
+Java_com_vantra_music_playback_audio_pass_PassNative_usbClose(JNIEnv *, jobject, jlong handle) {
     Stream *s = streamOf(handle);
     s->close();
     delete s;

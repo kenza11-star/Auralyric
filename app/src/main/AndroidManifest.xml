@@ -22,7 +22,7 @@
     <!-- Optional: If you also need to scan for Bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
-    <!-- Library > Local: lets Mochy find the songs already on the phone. Android 13 has its own
+    <!-- Library > Local: lets Vantra find the songs already on the phone. Android 13 has its own
          audio permission; older phones need the general storage one. -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
@@ -43,7 +43,7 @@
         </intent>
         <!-- source modules installed as their own app (modules/SourceModules.kt) -->
         <intent>
-            <action android:name="com.mochyy.mochymusic.SOURCE_MODULE" />
+            <action android:name="com.vantra.music.SOURCE_MODULE" />
         </intent>
         <!-- the song share sends straight to these three -->
         <package android:name="com.instagram.android" />
@@ -64,7 +64,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.mochy"
+        android:theme="@style/Theme.vantra"
         tools:targetApi="tiramisu">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -74,7 +74,7 @@
             android:name=".ui.screens.CrashActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.mochy"
+            android:theme="@style/Theme.vantra"
             android:excludeFromRecents="true"
             android:process=":crash" />
 
@@ -482,9 +482,9 @@
             android:label="@string/widget_music_player">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.mochyy.mochymusic.widget.PLAY_PAUSE" />
-                <action android:name="com.mochyy.mochymusic.widget.LIKE" />
-                <action android:name="com.mochyy.mochymusic.widget.UPDATE_WIDGET" />
+                <action android:name="com.vantra.music.widget.PLAY_PAUSE" />
+                <action android:name="com.vantra.music.widget.LIKE" />
+                <action android:name="com.vantra.music.widget.UPDATE_WIDGET" />
             </intent-filter>
 
             <meta-data
@@ -499,9 +499,9 @@
             android:label="@string/widget_turntable">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.mochyy.mochymusic.widget.TURNTABLE_PLAY_PAUSE" />
-                <action android:name="com.mochyy.mochymusic.widget.TURNTABLE_LIKE" />
-                <action android:name="com.mochyy.mochymusic.widget.UPDATE_TURNTABLE_WIDGET" />
+                <action android:name="com.vantra.music.widget.TURNTABLE_PLAY_PAUSE" />
+                <action android:name="com.vantra.music.widget.TURNTABLE_LIKE" />
+                <action android:name="com.vantra.music.widget.UPDATE_TURNTABLE_WIDGET" />
             </intent-filter>
 
             <meta-data
@@ -512,7 +512,7 @@
         <!-- Google Cast Options Provider -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.mochyy.mochymusic.cast.CastOptionsProvider" />
+            android:value="com.vantra.music.cast.CastOptionsProvider" />
     </application>
 
 </manifest>

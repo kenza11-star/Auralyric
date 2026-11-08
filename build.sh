@@ -18,7 +18,7 @@ CHANGELOG_TEXT=""
 CUSTOM_BUILD_INFO=""
 IS_CUSTOM_BUILD=false
 
-BETA_NOTICE_FILE="app/src/main/kotlin/com/mochyy/mochymusic/ui/screens/beta/BetaNoticeScreen.kt"
+BETA_NOTICE_FILE="app/src/main/kotlin/com/vantra/music/ui/screens/beta/BetaNoticeScreen.kt"
 
 cleanup() {
     if [ "$IS_CUSTOM_BUILD" = true ]; then
@@ -146,12 +146,12 @@ if [ "$SKIP_BUILD" = false ]; then
 
     # update beta notice
     if [ -f "$BETA_NOTICE_FILE" ]; then
-        NOTICE_TITLE="mochy build #$BUILD_ATTEMPT $VARIANT"
+        NOTICE_TITLE="vantra build #$BUILD_ATTEMPT $VARIANT"
         if [ -n "$CUSTOM_DATE" ]; then
-            NOTICE_TITLE="mochy build #$BUILD_ATTEMPT $VARIANT ($CUSTOM_DATE)"
+            NOTICE_TITLE="vantra build #$BUILD_ATTEMPT $VARIANT ($CUSTOM_DATE)"
         fi
-        sed -i '' -e "s/text = \"Mochy DEV PREV\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
-        sed -i '' -e "s/text = \"mochy build #[0-9]* .*\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
+        sed -i '' -e "s/text = \"Vantra DEV PREV\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
+        sed -i '' -e "s/text = \"vantra build #[0-9]* .*\"/text = \"$NOTICE_TITLE\"/g" "$BETA_NOTICE_FILE"
         sed -i '' -e "s/text = \"[0-9]*\.[0-9]*\.[0-9]*DEV\"/text = \"$BASE_VERSION build#$BUILD_ATTEMPT\"/g" "$BETA_NOTICE_FILE"
         sed -i '' -e "s/text = \"[0-9]*\.[0-9]*\.[0-9]* build#[0-9]*\"/text = \"$BASE_VERSION build#$BUILD_ATTEMPT\"/g" "$BETA_NOTICE_FILE"
     fi
@@ -203,14 +203,14 @@ if [ "$PUBLISH_RELEASE" = true ]; then
         fi
     }
 
-    format_apk "*universal-${FLAVOR}-release.apk" "mochy-$BASE_VERSION-universal.apk"
-    format_apk "*arm64-${FLAVOR}-release.apk" "mochy-$BASE_VERSION-arm64-v8a.apk"
-    format_apk "*armeabi-${FLAVOR}-release.apk" "mochy-$BASE_VERSION-armeabi-v7a.apk"
-    format_apk "*x86_64-${FLAVOR}-release.apk" "mochy-$BASE_VERSION-x86_64.apk"
-    format_apk "*x86-${FLAVOR}-release.apk" "mochy-$BASE_VERSION-x86.apk"
+    format_apk "*universal-${FLAVOR}-release.apk" "vantra-$BASE_VERSION-universal.apk"
+    format_apk "*arm64-${FLAVOR}-release.apk" "vantra-$BASE_VERSION-arm64-v8a.apk"
+    format_apk "*armeabi-${FLAVOR}-release.apk" "vantra-$BASE_VERSION-armeabi-v7a.apk"
+    format_apk "*x86_64-${FLAVOR}-release.apk" "vantra-$BASE_VERSION-x86_64.apk"
+    format_apk "*x86-${FLAVOR}-release.apk" "vantra-$BASE_VERSION-x86.apk"
 
     if [ -z "$CHANGELOG_TEXT" ]; then
-        CHANGELOG_TEXT="mochy $BASE_VERSION ($BUILD_ATTEMPT)"
+        CHANGELOG_TEXT="vantra $BASE_VERSION ($BUILD_ATTEMPT)"
     fi
 
     # update dev tag
@@ -218,17 +218,17 @@ if [ "$PUBLISH_RELEASE" = true ]; then
     git tag -f dev main 2>/dev/null || true
     git push -f origin dev 2>/dev/null || true
 
-    TITLE="mochy $BASE_VERSION ($BUILD_ATTEMPT)"
+    TITLE="vantra $BASE_VERSION ($BUILD_ATTEMPT)"
     echo "Publishing GitHub release: '$TITLE'..."
 
     if gh release view dev >/dev/null 2>&1; then
         gh release edit dev --title "$TITLE" --notes "$CHANGELOG_TEXT" --prerelease
-        gh release upload dev "$OUTPUT_DIR"/mochy-"$BASE_VERSION"-*.apk --clobber
+        gh release upload dev "$OUTPUT_DIR"/vantra-"$BASE_VERSION"-*.apk --clobber
     else
-        gh release create dev "$OUTPUT_DIR"/mochy-"$BASE_VERSION"-*.apk --title "$TITLE" --notes "$CHANGELOG_TEXT" --prerelease
+        gh release create dev "$OUTPUT_DIR"/vantra-"$BASE_VERSION"-*.apk --title "$TITLE" --notes "$CHANGELOG_TEXT" --prerelease
     fi
 
-    echo "Release successfully published to https://github.com/realidkroo/Mochy-Music/releases/tag/dev"
+    echo "Release successfully published to https://github.com/realidkroo/Vantra-Music/releases/tag/dev"
 fi
 
 # install and launch
@@ -249,11 +249,11 @@ if [ "$INSTALL_ON_DEVICES" = true ]; then
     else
         DEVICES=$(adb devices | grep -v "^List" | grep -w "device" | cut -f1)
         
-        PACKAGE_NAME="com.mochyy.mochymusic"
+        PACKAGE_NAME="com.vantra.music"
         if [ "$VARIANT" == "debug" ]; then
-            PACKAGE_NAME="com.mochyy.mochymusic.debug"
+            PACKAGE_NAME="com.vantra.music.debug"
         elif [ "$VARIANT" == "profileable" ]; then
-            PACKAGE_NAME="com.mochyy.mochymusic.profileable"
+            PACKAGE_NAME="com.vantra.music.profileable"
         fi
 
         if [ -z "$DEVICES" ]; then
