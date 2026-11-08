@@ -68,6 +68,9 @@ jobs:
           sed -i 's#^validateDistributionUrl=.*#validateDistributionUrl=false#' gradle/wrapper/gradle-wrapper.properties
           ./gradlew --version
 
+      - name: Remove leftovers of the old mochy source
+        run: bash .github/scripts/remove-old-source.sh
+
       - name: Generate debug.keystore
         run: |
           mkdir -p ~/.android
@@ -81,6 +84,18 @@ jobs:
             -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
+      - name: Restore release keystore (permanent signing key)
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$RELEASE_KEYSTORE_BASE64" ]; then
+            mkdir -p app/keystore
+            echo "$RELEASE_KEYSTORE_BASE64" | base64 --decode > app/keystore/release.keystore
+            echo "release keystore restored"
+          else
+            echo "::warning::RELEASE_KEYSTORE_BASE64 is not set, release falls back to a random debug key"
+          fi
+
       - name: Build Release APK
         env:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -88,8 +103,17 @@ jobs:
           LIBREFM_API_KEY: ${{ secrets.LIBREFM_API_KEY }}
           LIBREFM_SECRET: ${{ secrets.LIBREFM_SECRET }}
           DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          ./gradlew assembleArm64GmsRelease --no-configuration-cache --console=plain --warning-mode summary
+          # a download that hit a 5xx stays cached, so the next attempt only fetches what's missing
+          for i in 1 2 3 4; do
+            ./gradlew assembleArm64GmsRelease --no-configuration-cache --console=plain --warning-mode summary && exit 0
+            echo "Build failed (attempt $i), retrying in 30s..."
+            sleep 30
+          done
+          exit 1
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
