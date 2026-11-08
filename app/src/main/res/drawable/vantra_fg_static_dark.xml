@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:name="shape" android:pivotX="54" android:pivotY="54">
+        <clip-path android:name="roundClip" android:pathData="M29.3 30.82 Q29.3 23.41 35.07 28.06 L61.53 49.35 Q67.3 54 61.53 58.65 L35.07 79.94 Q29.3 84.59 29.3 77.18 Z" />
+        <path
+            android:pathData="M27.4 21.51 L69.2 54 L48.3 54 Z"
+            android:fillColor="#1A1A1A"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.33"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M27.4 86.49 L69.2 54 L48.3 54 Z"
+            android:fillColor="#4A4A4A"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.33"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M27.4 21.51 L27.4 86.49 L48.3 54 Z"
+            android:fillColor="#A0A0A0"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.33"
+            android:strokeLineJoin="round" />
+    </group>
+    <group android:name="waves">
+        <path
+            android:name="wave1"
+            android:pathData="M61.6 39.56 Q67.3 54 61.6 68.44"
+            android:fillColor="#00000000"
+            android:strokeColor="#111111"
+            android:strokeAlpha="0.95"
+            android:strokeWidth="2.09"
+            android:strokeLineCap="round" />
+        <path
+            android:name="wave2"
+            android:pathData="M67.3 33.86 Q75.85 54 67.3 74.14"
+            android:fillColor="#00000000"
+            android:strokeColor="#111111"
+            android:strokeAlpha="0.7"
+            android:strokeWidth="1.71"
+            android:strokeLineCap="round" />
+        <path
+            android:name="wave3"
+            android:pathData="M73 28.16 Q84.4 54 73 79.84"
+            android:fillColor="#00000000"
+            android:strokeColor="#111111"
+            android:strokeAlpha="0.4"
+            android:strokeWidth="1.33"
+            android:strokeLineCap="round" />
+    </group>
+    <path android:pathData="M33.58 27.78 L63.02 50.96" android:fillColor="#00000000" android:strokeColor="#111111" android:strokeAlpha="0.9" android:strokeWidth="0.57" android:strokeLineCap="round" />
+</vector>
