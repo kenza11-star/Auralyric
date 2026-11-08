@@ -5,7 +5,7 @@
     <string name="module_adds_lyrics">Lirik</string>
     <string name="module_adds_look">Tampilan</string>
     <string name="modules_beta">BETA</string>
-    <string name="modules_intro">Modul menambahkan sesuatu ke Auralyric: sumber lagu baru, lirik baru, dan tampilan baru. Matikan satu dan semua yang ia tambahkan ikut hilang, dari Kualitas Audio juga.</string>
+    <string name="modules_intro">Modul menambahkan sesuatu ke Vantra: sumber lagu baru, lirik baru, dan tampilan baru. Matikan satu dan semua yang ia tambahkan ikut hilang, dari Kualitas Audio juga.</string>
     <string name="module_status_signed_out">Belum masuk</string>
     <string name="module_status_expired">Masuk lagi · %1$s</string>
     <string name="module_status_on">Aktif · %1$s</string>
@@ -16,14 +16,14 @@
     <string name="module_by">%1$s · oleh %2$s</string>
     <string name="modules_find_more">Cari sumber lain</string>
     <string name="modules_find_more_desc">Tambahkan modul dari katalog atau dari tautan</string>
-    <string name="modules_find_more_body">Modul adalah layanan yang dijalankan orang lain. Auralyric hanya memintanya lagu, lirik, atau tampilan, dan ia tidak bisa menyentuh bagian lain aplikasi.</string>
+    <string name="modules_find_more_body">Modul adalah layanan yang dijalankan orang lain. Vantra hanya memintanya lagu, lirik, atau tampilan, dan ia tidak bisa menyentuh bagian lain aplikasi.</string>
     <string name="modules_add_from_link">Tambahkan dari tautan</string>
     <string name="modules_link_hint">https://…</string>
     <string name="modules_link_check">Periksa tautan</string>
     <string name="modules_link_checking">Memeriksa…</string>
     <string name="modules_link_not_a_link">Itu sepertinya bukan tautan. Seharusnya diawali https://</string>
     <string name="modules_link_unreachable">Tidak bisa menghubungi tautan itu. Periksa tautan dan koneksimu, lalu coba lagi.</string>
-    <string name="modules_link_not_a_module">Tautan itu menjawab, tapi bukan modul yang bisa dipakai Auralyric.</string>
+    <string name="modules_link_not_a_module">Tautan itu menjawab, tapi bukan modul yang bisa dipakai Vantra.</string>
     <string name="modules_catalog">Dari katalog</string>
     <string name="modules_catalog_failed">Tidak bisa memuat katalog. Periksa koneksimu lalu buka ini lagi.</string>
     <string name="modules_catalog_empty">Katalog masih kosong. Tempel tautan modul di atas untuk menambahkannya.</string>

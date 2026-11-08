@@ -6,7 +6,7 @@
     </style>
 
     <!-- Widget Theme for Android 12+ with Dynamic Colors -->
-    <style name="Theme.Widget.mochy" parent="@android:style/Theme.DeviceDefault.DayNight">
+    <style name="Theme.Widget.vantra" parent="@android:style/Theme.DeviceDefault.DayNight">
         <item name="android:fontFamily">@font/inter</item>
         <item name="fontFamily">@font/inter</item>
     </style>
