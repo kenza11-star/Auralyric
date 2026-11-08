@@ -142,7 +142,7 @@ if [ "$SKIP_BUILD" = false ]; then
     BASE_VERSION=$(grep 'versionName =' app/build.gradle.kts | head -n 1 | sed 's/.*versionName = "\(.*\)".*/\1/' | sed 's/ build#.*//')
 
     # update version name
-    sed -i '' "s/versionName = \".*\"/versionName = \"$BASE_VERSION build#$BUILD_ATTEMPT\"/g" app/build.gradle.kts
+    # version name is kept as written in app/build.gradle.kts (no build number)
 
     # update beta notice
     if [ -f "$BETA_NOTICE_FILE" ]; then
