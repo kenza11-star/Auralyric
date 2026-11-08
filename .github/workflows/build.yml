@@ -40,6 +40,34 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Download Gradle (mirrors + retry, for when services.gradle.org is down)
+        run: |
+          VER=$(grep '^distributionUrl' gradle/wrapper/gradle-wrapper.properties | sed -E 's/.*gradle-(.*)-bin\.zip.*/\1/')
+          echo "Gradle $VER"
+          fetch() {
+            for i in 1 2 3; do
+              if curl -fsSL --connect-timeout 20 --max-time 300 -o /tmp/gradle.zip "$1" && unzip -tq /tmp/gradle.zip > /dev/null; then
+                return 0
+              fi
+              echo "failed: $1 (attempt $i)"
+              sleep $((i * 10))
+            done
+            return 1
+          }
+          ok=0
+          for url in \
+            "https://services.gradle.org/distributions/gradle-$VER-bin.zip" \
+            "https://downloads.gradle.org/distributions/gradle-$VER-bin.zip" \
+            "https://mirrors.cloud.tencent.com/gradle/gradle-$VER-bin.zip" \
+            "https://mirrors.aliyun.com/gradle/gradle-$VER-bin.zip"; do
+            if fetch "$url"; then ok=1; echo "got Gradle from $url"; break; fi
+          done
+          [ "$ok" = 1 ] || { echo "no Gradle mirror worked"; exit 1; }
+          # CI only: point the wrapper at the downloaded zip so the build never hits the dead server
+          sed -i 's#^distributionUrl=.*#distributionUrl=file\\:///tmp/gradle.zip#' gradle/wrapper/gradle-wrapper.properties
+          sed -i 's#^validateDistributionUrl=.*#validateDistributionUrl=false#' gradle/wrapper/gradle-wrapper.properties
+          ./gradlew --version
+
       - name: Generate debug.keystore
         run: |
           mkdir -p ~/.android
