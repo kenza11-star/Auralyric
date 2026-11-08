@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#1A1A1A</color>
+    <color name="ic_launcher_background">#0B0B0B</color>
+    <color name="vantra_bg_app_icon_anime_dark">#111111</color>
+    <color name="vantra_bg_app_icon_anime_white">#FFFFFF</color>
+    <color name="vantra_bg_app_icon_mark_black">#000000</color>
+    <color name="vantra_bg_app_icon_mark_white">#FFFFFF</color>
+    <color name="vantra_bg_app_icon_outline">#1A1A1A</color>
+    <color name="vantra_bg_app_icon_outline_black">#000000</color>
+    <color name="vantra_bg_app_icon_outline_white">#FFFFFF</color>
 </resources>

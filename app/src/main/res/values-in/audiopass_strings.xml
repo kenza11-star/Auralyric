@@ -8,7 +8,7 @@
 
     <string name="audiopass_status_label">status</string>
     <string name="audiopass_status_connected">Terhubung</string>
-    <string name="audiopass_status_driven">Dijalankan Auralyric</string>
+    <string name="audiopass_status_driven">Dijalankan Vantra</string>
     <string name="audiopass_status_bluetooth">Bluetooth</string>
     <string name="audiopass_status_wired">Headphone</string>
     <string name="audiopass_status_none">Tidak terhubung</string>
@@ -56,7 +56,7 @@
     <string name="audiopass_bt_open_developer">Buka Opsi developer</string>
     <string name="audiopass_bt_developer_off">Nyalakan Opsi developer dulu: ketuk Nomor build 7 kali di Tentang ponsel.</string>
     <string name="audiopass_bt_permission">Tampilkan codec</string>
-    <string name="audiopass_bt_permission_hint">Auralyric perlu izin Perangkat sekitar untuk melihat codec yang dipakai headphone kamu.</string>
+    <string name="audiopass_bt_permission_hint">Vantra perlu izin Perangkat sekitar untuk melihat codec yang dipakai headphone kamu.</string>
     <string name="audiopass_bt_unknown_hint">Ponsel ini tidak langsung memberi tahu codec ke aplikasi. Codec muncul di sini begitu berubah.</string>
 
     <string name="audiopass_options">Opsi</string>
@@ -73,11 +73,11 @@
     <string name="audiopass_mode_bit_perfect">Bit-perfect</string>
     <string name="audiopass_mode_bit_perfect_desc">Android menyerahkan tiap lagu lossless ke DAC tanpa diubah.</string>
     <string name="audiopass_mode_direct_usb">USB langsung</string>
-    <string name="audiopass_mode_direct_usb_desc">Auralyric menjalankan DAC sendiri di Android apa pun dan mengatur volume di DAC. Meminta akses USB.</string>
+    <string name="audiopass_mode_direct_usb_desc">Vantra menjalankan DAC sendiri di Android apa pun dan mengatur volume di DAC. Meminta akses USB.</string>
     <string name="audiopass_mode_exclusive_usb">USB eksklusif</string>
-    <string name="audiopass_mode_exclusive_usb_desc">DAC dibuka khusus untuk Auralyric di rate lagu. Tidak semua ponsel mengizinkannya.</string>
+    <string name="audiopass_mode_exclusive_usb_desc">DAC dibuka khusus untuk Vantra di rate lagu. Tidak semua ponsel mengizinkannya.</string>
     <string name="audiopass_mode_exclusive_dac">DAC bawaan</string>
-    <string name="audiopass_mode_exclusive_dac_desc">Untuk pemutar musik dengan DAC sendiri: colokan headphone dibuka khusus untuk Auralyric.</string>
+    <string name="audiopass_mode_exclusive_dac_desc">Untuk pemutar musik dengan DAC sendiri: colokan headphone dibuka khusus untuk Vantra.</string>
     <string name="audiopass_mode_needs">Perlu Android %1$s</string>
 
     <string name="audiopass_blockers_title">Bit-perfect menunggu sampai ini mati</string>
@@ -93,13 +93,13 @@
     <string name="audiopass_blocker_lossy">Lagu lossy (YouTube, Apple Music) selalu diputar dengan cara biasa.</string>
     <string name="audiopass_now_bitperfect">Bit-perfect ke %1$s · %2$s kHz · %3$s-bit</string>
     <string name="audiopass_now_untouched">Tanpa diubah ke %1$s · %2$s kHz · %3$s-bit. Lagunya sendiri sudah dikompres sebelum sampai sini.</string>
-    <string name="audiopass_now_inexact">Sampai ke %1$s tanpa diubah, tapi sampel lagu ini sudah dibulatkan sebelum sampai ke Auralyric.</string>
+    <string name="audiopass_now_inexact">Sampai ke %1$s tanpa diubah, tapi sampel lagu ini sudah dibulatkan sebelum sampai ke Vantra.</string>
     <string name="audiopass_now_waiting">Siap. Lagu berikutnya yang bisa diterima langsung ke DAC.</string>
     <string name="audiopass_now_fell">Lagu %1$s kHz %2$s-bit tidak bisa membuka DAC dengan cara ini, jadi diputar dengan cara biasa.</string>
     <string name="audiopass_usb_title">USB langsung</string>
     <string name="audiopass_usb_permission">Izinkan akses USB</string>
     <string name="audiopass_usb_permission_hint">Android bertanya setiap kali DAC dicolokkan. Sebelum diizinkan, lagu diputar dengan cara biasa.</string>
-    <string name="audiopass_usb_no_dac">Colokkan DAC USB, lalu Auralyric yang mengurusnya.</string>
+    <string name="audiopass_usb_no_dac">Colokkan DAC USB, lalu Vantra yang mengurusnya.</string>
     <string name="audiopass_fixed_volume">DAC tanpa volume sendiri</string>
     <string name="audiopass_fixed_volume_desc">Diputar penuh, jadi hanya kenop DAC yang bisa mengecilkannya. Bisa sangat keras di headphone yang sensitif.</string>
     <string name="audiopass_dac_volume">Volume DAC</string>
