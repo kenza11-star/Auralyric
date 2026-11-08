@@ -23,7 +23,7 @@
     <string name="modules_link_checking">Memeriksa…</string>
     <string name="modules_link_not_a_link">Itu sepertinya bukan tautan. Seharusnya diawali https://</string>
     <string name="modules_link_unreachable">Tidak bisa menghubungi tautan itu. Periksa tautan dan koneksimu, lalu coba lagi.</string>
-    <string name="modules_link_not_a_module">Tautan itu menjawab, tapi bukan modul yang bisa dipakai Mochy.</string>
+    <string name="modules_link_not_a_module">Tautan itu menjawab, tapi bukan modul yang bisa dipakai Auralyric.</string>
     <string name="modules_catalog">Dari katalog</string>
     <string name="modules_catalog_failed">Tidak bisa memuat katalog. Periksa koneksimu lalu buka ini lagi.</string>
     <string name="modules_catalog_empty">Katalog masih kosong. Tempel tautan modul di atas untuk menambahkannya.</string>

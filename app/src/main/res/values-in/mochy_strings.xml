@@ -235,7 +235,7 @@
     <string name="scrobble_all_sent">Semua sudah terkirim</string>
     <string name="scrobble_send_later">Belum bisa dikirim. Auralyric terus mencoba setiap kamu online.</string>
     <string name="scrobble_signed_in">Masuk ke %1$s sebagai %2$s. Lagu yang kamu putar di-scrobble mulai sekarang.</string>
-    <string name="scrobble_signed_out">%1$s mengeluarkan Mochy. Masuk lagi di Pengaturan → Integrasi agar tetap scrobble.</string>
+    <string name="scrobble_signed_out">%1$s mengeluarkan Auralyric. Masuk lagi di Pengaturan → Integrasi agar tetap scrobble.</string>
     <string name="scrobble_sign_in_body">Pakai nama pengguna dan kata sandi %1$s-mu. Auralyric hanya menyimpan kunci masuk dari %1$s, tidak pernah kata sandimu.</string>
     <string name="scrobble_username_hint">Nama pengguna %1$s-mu</string>
     <string name="scrobble_password_hint">Kata sandi %1$s-mu</string>
@@ -322,7 +322,7 @@
     <string name="wrapped_ready_title">WRAPPED ANDA SUDAH SIAP!</string>
     <string name="wrapped_ready_subtitle">Saatnya melihat apa yang Anda sukai sepanjang tahun ini.</string>
     <string name="wrapped_thank_you">Terima kasih telah mendengarkan</string>
-    <string name="wrapped_special_thanks">Terima kasih khusus kepada MO Agamy karena telah membuat Auralyric</string>
+    <string name="wrapped_special_thanks">Special thanks to everyone who helped shape Auralyric</string>
     <string name="wrapped_close">Tutup wrapped</string>
     <string name="wrapped_playlist_title">Wrapped %s Anda</string>
     <string name="wrapped_create_playlist">Buat playlist</string>

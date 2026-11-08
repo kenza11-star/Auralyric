@@ -77,7 +77,7 @@
     <string name="audiopass_mode_exclusive_usb">USB eksklusif</string>
     <string name="audiopass_mode_exclusive_usb_desc">DAC dibuka khusus untuk Auralyric di rate lagu. Tidak semua ponsel mengizinkannya.</string>
     <string name="audiopass_mode_exclusive_dac">DAC bawaan</string>
-    <string name="audiopass_mode_exclusive_dac_desc">Untuk pemutar musik dengan DAC sendiri: colokan headphone dibuka khusus untuk Mochy.</string>
+    <string name="audiopass_mode_exclusive_dac_desc">Untuk pemutar musik dengan DAC sendiri: colokan headphone dibuka khusus untuk Auralyric.</string>
     <string name="audiopass_mode_needs">Perlu Android %1$s</string>
 
     <string name="audiopass_blockers_title">Bit-perfect menunggu sampai ini mati</string>
@@ -93,7 +93,7 @@
     <string name="audiopass_blocker_lossy">Lagu lossy (YouTube, Apple Music) selalu diputar dengan cara biasa.</string>
     <string name="audiopass_now_bitperfect">Bit-perfect ke %1$s · %2$s kHz · %3$s-bit</string>
     <string name="audiopass_now_untouched">Tanpa diubah ke %1$s · %2$s kHz · %3$s-bit. Lagunya sendiri sudah dikompres sebelum sampai sini.</string>
-    <string name="audiopass_now_inexact">Sampai ke %1$s tanpa diubah, tapi sampel lagu ini sudah dibulatkan sebelum sampai ke Mochy.</string>
+    <string name="audiopass_now_inexact">Sampai ke %1$s tanpa diubah, tapi sampel lagu ini sudah dibulatkan sebelum sampai ke Auralyric.</string>
     <string name="audiopass_now_waiting">Siap. Lagu berikutnya yang bisa diterima langsung ke DAC.</string>
     <string name="audiopass_now_fell">Lagu %1$s kHz %2$s-bit tidak bisa membuka DAC dengan cara ini, jadi diputar dengan cara biasa.</string>
     <string name="audiopass_usb_title">USB langsung</string>

@@ -77,7 +77,7 @@
     <string name="audiopass_mode_exclusive_usb">Exclusive USB</string>
     <string name="audiopass_mode_exclusive_usb_desc">The DAC opens just for Auralyric at the song\'s rate. Not every phone allows it.</string>
     <string name="audiopass_mode_exclusive_dac">Built-in DAC</string>
-    <string name="audiopass_mode_exclusive_dac_desc">For music players with their own DAC: the headphone jack opens just for Mochy.</string>
+    <string name="audiopass_mode_exclusive_dac_desc">For music players with their own DAC: the headphone jack opens just for Auralyric.</string>
     <string name="audiopass_mode_needs">Needs Android %1$s</string>
 
     <string name="audiopass_blockers_title">Bit-perfect waits until these are off</string>

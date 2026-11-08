@@ -324,12 +324,12 @@
     <string name="wrapped_end_create_playlist">Oppretta Wrapped-spelelista di</string>
     <string name="wrapped_end_creating_playlist">Opprettar…</string>
     <string name="wrapped_end_playlist_saved">Speleliste lagra</string>
-    <string name="wrapped_logo_content_description">mochy-merket</string>
+    <string name="wrapped_logo_content_description">auralyric-merket</string>
     <string name="wrapped_year">2026</string>
     <string name="wrapped_ready_title">DIN WRAPPED ER KLAR!</string>
     <string name="wrapped_ready_subtitle">På tide å sjå på kva du elska i år.</string>
     <string name="wrapped_thank_you">Takk for at du høyrde</string>
-    <string name="wrapped_special_thanks">Hjarteleg takk til Mo Agamy for å skapa Auralyric</string>
+    <string name="wrapped_special_thanks">Special thanks to everyone who helped shape Auralyric</string>
     <string name="wrapped_close">Steng wrapped</string>
     <string name="wrapped_playlist_title">Din %s Wrapped</string>
     <string name="wrapped_create_playlist">Oppretta speleliste</string>
