@@ -367,7 +367,7 @@
     <string name="enable_scrobbling">启用记录</string>
     <string name="lastfm_now_playing">发送正在播放的歌曲</string>
     <string name="last_fm_send_likes">发送点赞/取消点赞</string>
-    <string name="last_fm_send_likes_description">Last.fm上的歌曲在mochy上被点赞/取消点赞时,也会被标记为喜欢/不喜欢</string>
+    <string name="last_fm_send_likes_description">Last.fm上的歌曲在auralyric上被点赞/取消点赞时,也会被标记为喜欢/不喜欢</string>
     <string name="logging_in">正在登录…</string>
     <string name="scrobbling_configuration">Scrobbling记录设置</string>
     <string name="scrobble_min_track_duration">记录比…长的歌曲</string>
@@ -447,7 +447,7 @@
     <string name="wrapped_ready_title">您的年度总结已准备好！</string>
     <string name="wrapped_ready_subtitle">是时候看看您今年最喜欢什么了.</string>
     <string name="wrapped_thank_you">谢谢您的聆听</string>
-    <string name="wrapped_special_thanks">特别感谢 MO Agamy 创建了 Auralyric</string>
+    <string name="wrapped_special_thanks">Special thanks to everyone who helped shape Auralyric</string>
     <string name="wrapped_close">关闭年度总结</string>
     <string name="wrapped_playlist_title">您的 %s 年度总结</string>
     <string name="wrapped_create_playlist">创建播放列表</string>
@@ -780,8 +780,8 @@
     <string name="discord_presence">在场</string>
     <string name="discord_connect_description">使用 Discord 登录来分享你正在收听的内容</string>
     <string name="discord_playing_mochy">播放 Auralyric</string>
-    <string name="discord_watching_mochy">观看mochy</string>
-    <string name="discord_competing_mochy">参与mochy评选</string>
+    <string name="discord_watching_mochy">观看auralyric</string>
+    <string name="discord_competing_mochy">参与auralyric评选</string>
     <string name="discord_activity_name">活动名称</string>
     <string name="discord_activity_name_description">自定义活动名称（留空则使用默认值）</string>
     <string name="discord_advanced_mode">高级模式</string>
