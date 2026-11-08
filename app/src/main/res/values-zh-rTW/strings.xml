@@ -2,7 +2,7 @@
 <!-- Upstream InnerTune strings -->
 <!-- Do not add new features here -->
 <!-- Try to re-use strings here, but be careful on its usage e.g. verb vs noun -->
-<!-- "InnerTune" is replaced with "mochy" -->
+<!-- "InnerTune" is replaced with "vantra" -->
 <!-- Translators: Do not modify this file for translations, use InnerTune's Weblate instead. -->
 <resources>
     <!-- Bottom navigation -->
@@ -325,7 +325,7 @@
     <string name="backup_create_failed">無法建立備份</string>
     <string name="restore_failed">無法還原備份</string>
     <string name="discord_integration">Discord 整合</string>
-    <string name="discord_information">auralyric使用KizzyRPC函式庫來設定您的Discord狀態。這會用到Discord Gateway連線，可能會違反Discord服務條款，但是目前沒有使用者為此被停用帳號。使用此功能需自行承擔此風險。\n\nauralyric只會提取你的token，所有東西都存在本機。</string>
+    <string name="discord_information">vantra使用KizzyRPC函式庫來設定您的Discord狀態。這會用到Discord Gateway連線，可能會違反Discord服務條款，但是目前沒有使用者為此被停用帳號。使用此功能需自行承擔此風險。\n\nvantra只會提取你的token，所有東西都存在本機。</string>
     <string name="dismiss">了解</string>
     <string name="options">選項</string>
     <string name="preview">預覽</string>
