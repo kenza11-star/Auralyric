@@ -68,6 +68,9 @@ jobs:
           sed -i 's#^validateDistributionUrl=.*#validateDistributionUrl=false#' gradle/wrapper/gradle-wrapper.properties
           ./gradlew --version
 
+      - name: Remove leftovers of the old mochy source
+        run: bash .github/scripts/remove-old-source.sh
+
       - name: Generate debug.keystore
         run: |
           mkdir -p ~/.android
