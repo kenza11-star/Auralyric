@@ -64,7 +64,7 @@ internal object TransferArchive {
         "listening_signals" to "listening_signals",
         "not_recommended" to com.mochyy.mochymusic.utils.NotRecommended.PREFS_NAME,
         "source_modules" to "source_modules",
-        "display" to "mochy_settings",
+        "display" to "auralyric_settings",
     )
 
     // sign-ins and tokens stay behind, the new app signs in again instead of carrying them around in a zip

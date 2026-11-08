@@ -305,7 +305,7 @@ private fun ScratchCoating(
         translate(strip.left, strip.top) {
             drawSilver(strip.size, r, now)
             // repeated micro text, like a lottery ticket's coating
-            val micro = measurer.measure("SCRATCH · MOCHY · ", microStyle, softWrap = false, maxLines = 1)
+            val micro = measurer.measure("SCRATCH · AURALYRIC · ", microStyle, softWrap = false, maxLines = 1)
             clipRect(0f, 0f, strip.width, strip.height) {
                 var y = strip.height * 0.18f
                 var row = 0

@@ -53,7 +53,7 @@ class AppleMusicModule : SourceModule {
         id = Id,
         name = "Apple Music",
         version = "1.0",
-        description = "Plays your Apple Music subscription in Mochy, in AAC 256, with every Audio Lab effect",
+        description = "Plays your Apple Music subscription in Auralyric, in AAC 256, with every Audio Lab effect",
     )
 
     private lateinit var host: ModuleHost
@@ -71,7 +71,7 @@ class AppleMusicModule : SourceModule {
         sessionOrigins = setOf("https://music.apple.com"),
         desktopSite = false,
         title = "Sign in to Apple Music",
-        subtitle = "Your subscription plays in Mochy",
+        subtitle = "Your subscription plays in Auralyric",
     )
 
     override val choices = listOf(

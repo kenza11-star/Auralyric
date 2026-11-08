@@ -314,7 +314,7 @@ private fun exportDir(context: Context): File = File(context.cacheDir, ExportDir
 private fun newExportFile(context: Context, extension: String): File {
     val dir = exportDir(context)
     dir.listFiles()?.filter { it.name != "carrier.png" && System.currentTimeMillis() - it.lastModified() > 60_000L }?.forEach { it.delete() }
-    return File(dir, "mochy-${System.currentTimeMillis()}.$extension")
+    return File(dir, "auralyric-${System.currentTimeMillis()}.$extension")
 }
 
 private fun webSources(context: Context, headers: Map<String, String>): MediaSource.Factory {

@@ -1454,7 +1454,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             com.mochyy.mochymusic.ui.component.TopToaster.show(
-                if (done == 0) "Couldn't import that" else "Imported $done song${if (done != 1) "s" else ""} to Mochy",
+                if (done == 0) "Couldn't import that" else "Imported $done song${if (done != 1) "s" else ""} to Auralyric",
             )
         }
         return true
@@ -1562,7 +1562,7 @@ val SubSettingsRoutes = setOf(
     "experimental_settings",
     "cipher_settings",
     "playback_diagnostics",
-    "mochy_settings",
+    "auralyric_settings",
     "import_sync",
     "import_providers",
     "import_tunemymusic",

@@ -52,7 +52,7 @@ class TransferViewModel @Inject constructor(
     val manifest: StateFlow<TransferManifest?> = _manifest.asStateFlow()
 
     /** the name the export suggests, so it's easy to spot in downloads later */
-    fun exportFileName(): String = "mochy-export-${LocalDate.now()}.zip"
+    fun exportFileName(): String = "auralyric-export-${LocalDate.now()}.zip"
 
     fun exportTo(target: Uri) {
         if (_export.value is TransferStep.Working) return

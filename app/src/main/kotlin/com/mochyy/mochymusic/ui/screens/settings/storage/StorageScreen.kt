@@ -249,7 +249,7 @@ private fun CacheLimitCard(limit: Int, onLimitChange: (Int) -> Unit, appliesLate
             exit = shrinkVertically() + fadeOut(),
         ) {
             Text(
-                "The new limit starts next time you open Mochy.",
+                "The new limit starts next time you open Auralyric.",
                 style = storageText(12f, FontWeight.Medium, StorageMuted, -0.1f),
                 modifier = Modifier.padding(top = 8.dp),
             )

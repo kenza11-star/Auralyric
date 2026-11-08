@@ -5,7 +5,7 @@ import android.os.Environment
 import java.io.File
 
 fun getDownloadedApksDir(context: Context): File {
-    return File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "mochy_updates")
+    return File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "auralyric_updates")
 }
 
 fun getDownloadedApkCount(context: Context): Int {

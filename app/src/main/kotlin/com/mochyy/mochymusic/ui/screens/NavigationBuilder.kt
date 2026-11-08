@@ -381,7 +381,7 @@ fun NavGraphBuilder.navigationBuilder(
         com.mochyy.mochymusic.ui.screens.settings.PlaybackDiagnosticsScreen(navController = navController)
     }
 
-    composable("mochy_settings") {
+    composable("auralyric_settings") {
         com.mochyy.mochymusic.ui.screens.settings.MochySettingsScreen(navController = navController)
     }
 

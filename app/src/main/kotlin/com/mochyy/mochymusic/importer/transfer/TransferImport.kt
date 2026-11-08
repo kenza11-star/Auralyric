@@ -48,7 +48,7 @@ class TransferImporter @Inject constructor(
         // the zip's contents land next to the data, so they need about as much room as the zip itself
         val needed = manifest.bytes + SpareBytes
         if (context.dataDir.usableSpace < needed) {
-            throw TransferException("Not enough free space. Mochy needs about ${needed / 1_000_000} MB free to import this.")
+            throw TransferException("Not enough free space. Auralyric needs about ${needed / 1_000_000} MB free to import this.")
         }
 
         val staging = TransferRestore.stagingDir(context).apply { deleteRecursively(); mkdirs() }
@@ -86,11 +86,11 @@ class TransferImporter @Inject constructor(
         }
         val manifest = TransferManifest.fromJson(json) ?: throw NotAnExport()
         if (manifest.formatVersion > TransferArchive.FormatVersion || manifest.databaseVersion > MusicDatabaseVersion) {
-            throw TransferException("This export comes from a newer Mochy. Update Mochy first, then import it again.")
+            throw TransferException("This export comes from a newer Auralyric. Update Auralyric first, then import it again.")
         }
         // without a path room would fall back to an empty library, so refuse before touching anything
         if (!hasMigrationPath(manifest.databaseVersion, MusicDatabaseVersion)) {
-            throw TransferException("This export is too old for Mochy to read. Update your old app, export again and import that.")
+            throw TransferException("This export is too old for Auralyric to read. Update your old app, export again and import that.")
         }
         return manifest
     }

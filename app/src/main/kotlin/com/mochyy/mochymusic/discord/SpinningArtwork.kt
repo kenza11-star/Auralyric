@@ -285,7 +285,7 @@ internal class SpinningArtwork(
         private fun post(url: String, fileField: String, gif: ByteArray, vararg fields: Pair<String, String>): String {
             val body = MultipartBody.Builder().setType(MultipartBody.FORM).apply {
                 fields.forEach { (name, value) -> addFormDataPart(name, value) }
-                addFormDataPart(fileField, "mochy.gif", gif.toRequestBody("image/gif".toMediaType()))
+                addFormDataPart(fileField, "auralyric.gif", gif.toRequestBody("image/gif".toMediaType()))
             }.build()
             val request = Request.Builder().url(url).post(body).build()
             return DiscordHttp.client.newCall(request).execute().use { response ->

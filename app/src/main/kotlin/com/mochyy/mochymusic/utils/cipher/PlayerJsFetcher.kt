@@ -11,7 +11,7 @@ import timber.log.Timber
 import java.io.File
 
 object PlayerJsFetcher {
-    private const val TAG = "mochy_CipherFetcher"
+    private const val TAG = "auralyric_CipherFetcher"
     private const val IFRAME_API_URL = "https://www.youtube.com/iframe_api"
     private const val PLAYER_JS_URL_TEMPLATE = "https://www.youtube.com/s/player/%s/player_ias.vflset/en_GB/base.js"
     /** How long a downloaded player script is reused before it is re-fetched. */

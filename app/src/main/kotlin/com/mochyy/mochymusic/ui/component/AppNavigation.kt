@@ -123,7 +123,7 @@ private val RouteOwners: List<Pair<String, String>> = listOf(
     "library/" to "library",
     "cipher_settings" to "settings",
     "playback_diagnostics" to "settings",
-    "mochy_settings" to "settings",
+    "auralyric_settings" to "settings",
     "general_settings" to "settings",
     "experimental_settings" to "settings",
     "developer_space" to "settings",

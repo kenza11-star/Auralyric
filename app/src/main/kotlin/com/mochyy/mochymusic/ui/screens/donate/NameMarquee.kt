@@ -38,7 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.ceil
 
-private const val MarqueeText = "MOCHY MUSIC"
+private const val MarqueeText = "AURALYRIC MUSIC"
 
 // the band is this many capital-heights tall: two rows, the gap between them, a sliver under the bottom one, the top one tucked a bit past the edge
 private const val BandInCaps = 2.13f

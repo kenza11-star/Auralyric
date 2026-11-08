@@ -127,10 +127,10 @@ fun ImportSyncScreen(
                     title = { Text("Export to Auralyric CSV") },
                     highlightKey = "Export to Auralyric CSV",
                     descriptionText = "Liked songs and playlists",
-                    detail = "Liked songs and playlists, import it back from Import → Mochy backup",
+                    detail = "Liked songs and playlists, import it back from Import → Auralyric backup",
                     icon = painterResource(R.drawable.backup),
                     iconShape = CircleShape,
-                    onClick = { exportLauncher.launch("mochy-library-${LocalDate.now()}.csv") },
+                    onClick = { exportLauncher.launch("auralyric-library-${LocalDate.now()}.csv") },
                 ),
             ),
         )

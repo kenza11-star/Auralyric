@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 object CipherDeobfuscator {
-    private const val TAG = "mochy_CipherDeobfusc"
+    private const val TAG = "auralyric_CipherDeobfusc"
 
     lateinit var appContext: Context
         private set

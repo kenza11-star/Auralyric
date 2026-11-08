@@ -41,7 +41,7 @@ object YouLyPlus {
                 requestTimeoutMillis = 8_000
             }
             // says who's asking so the server owner can reach us instead of blocking us
-            install(UserAgent) { agent = "Mochy (+https://github.com/realidkroo/Mochy-Music)" }
+            install(UserAgent) { agent = "Auralyric (+https://github.com/realidkroo/Auralyric-Music)" }
             install(ContentNegotiation) {
                 json(
                     Json {

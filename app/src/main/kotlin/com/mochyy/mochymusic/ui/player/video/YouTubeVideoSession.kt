@@ -58,7 +58,7 @@ private const val MaxBufferMs = 40_000
 private const val BufferToStartMs = 800
 private const val BufferToResumeMs = 1_600
 
-private val ManifestUri: Uri = Uri.parse("https://www.youtube.com/mochy-video.mpd")
+private val ManifestUri: Uri = Uri.parse("https://www.youtube.com/auralyric-video.mpd")
 
 // the youtube video's own thread: building, loading and letting go of a player never lands on a frame
 private object YouTubeVideoThread {

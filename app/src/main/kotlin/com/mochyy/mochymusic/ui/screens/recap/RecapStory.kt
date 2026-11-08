@@ -236,7 +236,7 @@ internal class StoryState(val geo: StoryGeometry, startCard: Rect) {
     var paletteTo by mutableStateOf(RecapPalette.Fallback)
     val paletteMix = Animatable(1f)
 
-    val text = GiantTextState("MOCHY", half = 4, filledRows = 0..0).also { it.color = { textColor() } }
+    val text = GiantTextState("AURALYRIC", half = 4, filledRows = 0..0).also { it.color = { textColor() } }
     val logoSide = Animatable(0f)
 
     val cardX = Animatable(startCard.left)
@@ -825,7 +825,7 @@ internal class StoryDirector(
             { s.text.scale.go(0.74f, 1200, androidx.compose.animation.core.FastOutSlowInEasing) },
             {
                 for (i in listOf(-2, 2, -3, 3, -4, 4)) {
-                    launch { s.text.row(i).slideIn("MOCHY", 1000) }
+                    launch { s.text.row(i).slideIn("AURALYRIC", 1000) }
                     delay(70)
                 }
             },
@@ -1007,7 +1007,7 @@ internal class StoryDirector(
             { s.text.alpha.go(0.9f, 1200, delayMs = 300) },
             {
                 for (i in -4..4) {
-                    launch { s.text.row(i).slideIn("MOCHY", 1000) }
+                    launch { s.text.row(i).slideIn("AURALYRIC", 1000) }
                     delay(50)
                 }
             },
@@ -1031,7 +1031,7 @@ internal class StoryDirector(
             { s.text.alpha.go(1f, 600) },
             {
                 for (i in -4..4) if (i != 0) launch { s.text.row(i).slideOut(560) }
-                if (row0.word != "MOCHY" || row0.fill.value < 1f) row0.slideIn("MOCHY", 700)
+                if (row0.word != "AURALYRIC" || row0.fill.value < 1f) row0.slideIn("AURALYRIC", 700)
             },
             { s.text.rotation.go(90f, 1050, delayMs = 150) },
             { s.text.scale.go(1f, 1050, delayMs = 150) },

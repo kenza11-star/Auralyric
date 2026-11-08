@@ -21,7 +21,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 object EjsNTransformSolver {
-    private const val TAG = "mochy_EjsNSolver"
+    private const val TAG = "auralyric_EjsNSolver"
 
     private var solverWebView: SolverWebView? = null
 

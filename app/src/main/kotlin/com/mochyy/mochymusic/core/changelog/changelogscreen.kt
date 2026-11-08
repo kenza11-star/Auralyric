@@ -141,7 +141,7 @@ fun ChangelogScreen(
                 } else {
                     val changelogUrl = URL("https://github.com/kenza11-star/Auralyric/releases/download/$tag/changelog.json")
                     val connection = changelogUrl.openConnection() as HttpURLConnection
-                    connection.setRequestProperty("User-Agent", "Mochy-Changelog-App")
+                    connection.setRequestProperty("User-Agent", "Auralyric-Changelog-App")
                     connection.setRequestProperty("Accept", "application/json")
 
                     if (connection.responseCode == 200) {
@@ -214,7 +214,7 @@ fun ChangelogScreen(
             try {
                 val releasesUrl = URL("https://api.github.com/repos/kenza11-star/Auralyric/releases")
                 val connection = releasesUrl.openConnection() as HttpURLConnection
-                connection.setRequestProperty("User-Agent", "Mochy-Changelog-App")
+                connection.setRequestProperty("User-Agent", "Auralyric-Changelog-App")
                 connection.setRequestProperty("Accept", "application/vnd.github+json")
 
                 if (connection.responseCode == 200) {

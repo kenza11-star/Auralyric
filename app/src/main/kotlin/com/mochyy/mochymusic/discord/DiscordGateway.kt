@@ -130,7 +130,7 @@ internal class DiscordGateway(
                 put("intents", Intents)
                 put("properties", buildJsonObject {
                     put("os", "Android")
-                    put("browser", "Mochy")
+                    put("browser", "Auralyric")
                     put("device", "Android")
                 })
             },

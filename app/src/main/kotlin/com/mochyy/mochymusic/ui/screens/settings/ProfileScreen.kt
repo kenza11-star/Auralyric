@@ -296,7 +296,7 @@ fun ProfileScreen(navController: NavController) {
     val time = rememberRecapTime(running = !storyCovering, held = { profile.holdsPage || obscured.value })
     val measurer = rememberTextMeasurer()
     val giant = remember {
-        GiantTextState("MOCHY", filledRows = 0..0).apply { color = { lerp(HeaderText, StoryTextDark, expand) } }
+        GiantTextState("AURALYRIC", filledRows = 0..0).apply { color = { lerp(HeaderText, StoryTextDark, expand) } }
     }
 
     // whether there's a recap waiting, so the pull hint can say so now and then
@@ -724,7 +724,7 @@ fun ProfileScreen(navController: NavController) {
                         DeveloperCard(onClick = { navController.navigate("developer_space") })
                         Spacer(Modifier.height(28.dp))
                         Text("Settings", style = PageTitle.copy(fontSize = 15.sp), modifier = Modifier.padding(start = 2.dp, bottom = 10.dp))
-                        OpenSettingsRow(onClick = { navController.navigate("mochy_settings") })
+                        OpenSettingsRow(onClick = { navController.navigate("auralyric_settings") })
                         Spacer(Modifier.height(180.dp))
                     }
                 }
