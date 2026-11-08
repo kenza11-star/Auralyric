@@ -4025,6 +4025,10 @@ class MusicService :
                     )
                 } catch (_: SQLException) {
                 }
+                // the hidden streak: the 3rd day in a row lights it up with a notification
+                runCatching {
+                    com.vantra.music.utils.StreakManager.onListened(this@MusicService, this, dataStore)
+                }
             }
         }
     }

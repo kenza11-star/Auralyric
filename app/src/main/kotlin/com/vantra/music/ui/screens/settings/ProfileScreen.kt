@@ -257,6 +257,9 @@ fun ProfileScreen(navController: NavController) {
     }
     val accountName = localUsername.ifBlank { liveAccountName.orEmpty() }
     val totalListeningMs by database.totalListeningTimeMs().collectAsState(initial = 0L)
+    val listeningDays by database.listeningDays().collectAsState(initial = emptyList())
+    val streak = remember(listeningDays) { com.vantra.music.utils.StreakManager.compute(listeningDays) }
+    val (streakUnlocked) = rememberPreference(com.vantra.music.constants.StreakUnlockedKey, false)
 
     // the onboarding writes the card's number and join date; an install from before it gets them once, here
     LaunchedEffect(cardNumberPref, joinedEpochDay) {
@@ -711,6 +714,11 @@ fun ProfileScreen(navController: NavController) {
                         Spacer(Modifier.height(24.dp))
                         ListeningTimeCard(totalListeningMs, onViewStats = { navController.navigate("stats") })
                         Spacer(Modifier.height(16.dp))
+                        // hidden until 3 days in a row; then the flame card sits between listening time and version
+                        if (streakUnlocked || streak.current >= com.vantra.music.utils.StreakManager.UNLOCK_DAYS) {
+                            StreakCard(streak)
+                            Spacer(Modifier.height(16.dp))
+                        }
                         val openDevSpace: (Int) -> Unit = { personIndex ->
                             zoomOutState.dismissAll()
                             navController.navigate("developer_space?person=$personIndex")

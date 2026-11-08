@@ -148,6 +148,9 @@ val YtSyncHoldKey = booleanPreferencesKey("ytSyncHold")
 val ProfileCardNumberKey = stringPreferencesKey("profileCardNumber")
 val ProfileJoinedEpochDayKey = longPreferencesKey("profileJoinedEpochDay")
 
+/** The hidden streak card: set once the user has listened 3 days in a row (the "streak is on" notification went out). */
+val StreakUnlockedKey = booleanPreferencesKey("streakUnlocked")
+
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 val IpVersionKey = stringPreferencesKey("ipVersion")
 

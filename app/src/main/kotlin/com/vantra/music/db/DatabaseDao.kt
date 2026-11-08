@@ -289,6 +289,13 @@ interface DatabaseDao {
     @Query("SELECT COALESCE(SUM(playTime), 0) FROM event")
     fun totalListeningTimeMs(): Flow<Long>
 
+    /** Epoch days (device-local) on which at least a minute was listened to; feeds the streak. */
+    @Query("SELECT timestamp / 86400000 AS d FROM event GROUP BY d HAVING SUM(playTime) >= 60000 ORDER BY d")
+    fun listeningDays(): Flow<List<Long>>
+
+    @Query("SELECT timestamp / 86400000 AS d FROM event GROUP BY d HAVING SUM(playTime) >= 60000 ORDER BY d")
+    fun listeningDaysOnce(): List<Long>
+
     @Query(
         """
         SELECT s.*
