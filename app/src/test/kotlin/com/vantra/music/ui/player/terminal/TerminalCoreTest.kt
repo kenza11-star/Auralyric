@@ -372,14 +372,15 @@ class TerminalCoreTest {
     // ---- camera ----
 
     @Test
-    fun theCameraIsStillAtZeroIntensityAndSettlesAfterAKick() {
+    fun theCameraIsStillAtZeroIntensityAndSettlesAfterADisplacement() {
         val still = TerminalCamera()
         repeat(120) { still.update(1f / 60f, it / 60f, intensity = 0f, bass = 1f, energy = 1f, kick = 1f, wide = false) }
         assertEquals(0f, still.yaw.value, 1e-6f)
         assertEquals(0f, still.dolly.value, 1e-6f)
 
         val cam = TerminalCamera()
-        cam.update(1f / 60f, 0f, intensity = 1f, bass = 0f, energy = 0f, kick = 1f, wide = false)
+        cam.dolly.kick(0.5f)
+        cam.update(1f / 60f, 0f, intensity = 1f, bass = 0f, energy = 0f, kick = 0f, wide = false)
         val pushed = cam.dolly.velocity
         assertTrue(pushed > 0f)
         repeat(240) { cam.update(1f / 60f, 0f, intensity = 1f, bass = 0f, energy = 0f, kick = 0f, wide = false) }
