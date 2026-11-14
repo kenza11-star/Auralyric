@@ -51,12 +51,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -72,6 +76,7 @@ import com.vantra.music.constants.TerminalQuality
 import com.vantra.music.constants.TerminalQualityKey
 import com.vantra.music.constants.TerminalTypingKey
 import com.vantra.music.lyrics.LyricsEntry
+import com.vantra.music.ui.player.findActivity
 import com.vantra.music.ui.player.styles.LivePosition
 import com.vantra.music.ui.player.styles.StyleActions
 import com.vantra.music.ui.player.styles.StyleControls
@@ -129,6 +134,8 @@ fun TerminalPlayerStyle(actions: StyleActions, modifier: Modifier = Modifier, pr
         rotatedOverride = rotated,
     ) { landscape, menuOpen, setMenuOpen, isRotated, _ ->
         val insets = styleInsets(landscape)
+        // landscape is a fullscreen code environment: the system bars step aside while it shows
+        ImmersiveWhileLandscape(active = landscape && !preview)
 
         // in landscape the controls step aside while the music plays; a tap brings them back
         var reveal by remember { mutableIntStateOf(0) }
@@ -175,6 +182,7 @@ fun TerminalPlayerStyle(actions: StyleActions, modifier: Modifier = Modifier, pr
                     insetTop = insets.top,
                     insetEnd = insets.end,
                     insetBottom = insets.bottom,
+                    uiAlpha = controlsAlpha,
                 )
                 if (controlsAlpha > 0.01f) {
                     Box(Modifier.fillMaxSize().graphicsLayer { alpha = controlsAlpha }) {
@@ -204,6 +212,7 @@ private class SceneState {
     var low = false
     var timeNs = 0L
     var solidCursor = false
+    var followX = 0f
     var lastLine = -2
     var primed = false
 }
@@ -247,8 +256,10 @@ private fun TerminalScene(
             doc.locate(position.positionMs(), typing = false, out = s.cursor)
             s.scroll.snap(s.cursor.row.toFloat())
             s.camera.reset()
-            s.camera.yaw.snap(0.24f)
-            s.camera.pitch.snap(0.07f)
+            s.camera.baseYaw = if (landscape) 0.10f else 0.06f
+            s.camera.basePitch = -0.09f
+            s.camera.yaw.snap(s.camera.baseYaw)
+            s.camera.pitch.snap(s.camera.basePitch)
             s.low = false
             s.glow = 0.5f
             s.solidCursor = true
@@ -332,6 +343,10 @@ private fun TerminalScene(
 
                         val lyricMs = position.positionMs()
                         docNow.locate(lyricMs, typingPref && !reduced, s.cursor)
+                        // the resting angle onto the page, and where along the row the words are being written
+                        s.camera.baseYaw = if (landscapeNow) 0.10f else 0.06f
+                        s.camera.basePitch = -0.09f
+                        s.followX = ((s.cursor.col.toFloat() / maxOf(1, docNow.columns) - 0.5f) * 2f).coerceIn(-1f, 1f)
                         // the lyric fallback: only a gentle push on a new line, never passed off as a beat
                         if (s.cursor.line != s.lastLine) {
                             if (src == BeatSource.LYRIC_TIMING && s.cursor.line >= 0 && s.lastLine != -2) {
@@ -356,6 +371,7 @@ private fun TerminalScene(
                             energy = if (heard) s.tracker.energy else 0f,
                             kick = if (heard) s.tracker.kick else 0f,
                             wide = landscapeNow,
+                            follow = s.followX * k,
                         )
                         s.glow = if (heard) s.tracker.bass else if (src == BeatSource.LYRIC_TIMING) 0.2f else 0.1f
                         s.solidCursor = playing && s.cursor.typed < (docNow.lines.getOrNull(s.cursor.line)?.text?.length ?: 0)
@@ -409,11 +425,11 @@ private fun buildDocument(lines: List<LyricsEntry>, track: StyleTrack, columns: 
         val texts = lines.map { entry ->
             if (entry.text.any { it == '\n' || it == '\r' || it == '\t' }) entry.text.map { if (it == '\n' || it == '\r' || it == '\t') ' ' else it }.joinToString("") else entry.text
         }
-        return TerminalDocument.build(times, texts, columns)
+        return TerminalDocument.build(times, texts, columns, track.title, track.artist)
     }
     val head = listOf(track.title, track.artist).filter { it.isNotBlank() }
     if (head.isEmpty()) return TerminalDocument.empty()
-    return TerminalDocument.build(LongArray(head.size) { it * 900L }, head, columns)
+    return TerminalDocument.build(LongArray(head.size) { it * 900L }, head, columns, track.title, track.artist)
 }
 
 // ---- the chrome around the scene ---------------------------------------------------------
@@ -430,7 +446,10 @@ private fun TerminalChrome(
     insetTop: androidx.compose.ui.unit.Dp,
     insetEnd: androidx.compose.ui.unit.Dp,
     insetBottom: androidx.compose.ui.unit.Dp,
+    /** landscape keeps only the progress hairline until a tap brings the rest back */
+    uiAlpha: Float,
 ) {
+    val chromeAlpha = if (landscape) uiAlpha else 1f
     val seconds = rememberPlayedSeconds(position)
     Box(Modifier.fillMaxSize()) {
         // the editor's tab: artwork, title and artist, over a hairline that is the song's progress
@@ -440,7 +459,7 @@ private fun TerminalChrome(
                 .padding(start = 18.dp + insetStart, top = insetTop + 14.dp, end = (if (landscape) 76.dp else 70.dp) + insetEnd)
                 .fillMaxWidth(),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.graphicsLayer { alpha = chromeAlpha }, verticalAlignment = Alignment.CenterVertically) {
                 if (track.artwork != null) {
                     AsyncImage(
                         model = track.artwork,
@@ -476,7 +495,8 @@ private fun TerminalChrome(
             style = TextStyle(fontFamily = Mono, fontSize = 10.sp),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 18.dp + insetStart, bottom = insetBottom + 10.dp),
+                .padding(start = 18.dp + insetStart, bottom = insetBottom + 10.dp)
+                .graphicsLayer { alpha = chromeAlpha },
         )
     }
 }
@@ -540,4 +560,36 @@ private fun rememberDeviceSideways(enabled: Boolean): Boolean {
     }
     DisposableEffect(listener) { onDispose { listener.disable() } }
     return enabled && sideways
+}
+
+/**
+ * Hides the status and navigation bars while the landscape Terminal is on screen, and brings them
+ * back when it leaves (turned portrait, another style, the player collapsed, or the app closing).
+ * A swipe from the edge shows them briefly. It changes nothing but the window's bars.
+ */
+@Composable
+private fun ImmersiveWhileLandscape(active: Boolean) {
+    val view = LocalView.current
+    val showing = rememberStyleShowing()
+    var on by remember { mutableStateOf(false) }
+    LaunchedEffect(active, showing) {
+        if (!active) {
+            on = false
+            return@LaunchedEffect
+        }
+        snapshotFlow { showing() }.collect { shown -> on = shown }
+    }
+    DisposableEffect(view, on) {
+        val window = view.context.findActivity()?.window
+        val controller: WindowInsetsControllerCompat? = window?.let { WindowCompat.getInsetsController(it, view) }
+        var hid = false
+        if (on && controller != null) {
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            hid = true
+        }
+        onDispose {
+            if (hid) controller?.show(WindowInsetsCompat.Type.systemBars())
+        }
+    }
 }

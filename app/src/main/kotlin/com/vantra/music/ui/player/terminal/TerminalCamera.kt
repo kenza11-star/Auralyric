@@ -44,6 +44,10 @@ class TerminalCamera {
     val panY = Spring()
     private var side = 1f
 
+    /** the resting composition the drift moves around: the camera's own angle onto the page, set per orientation */
+    var baseYaw = 0f
+    var basePitch = 0f
+
     fun reset() {
         yaw.snap(0f); pitch.snap(0f); roll.snap(0f); dolly.snap(0f); panX.snap(0f); panY.snap(0f)
     }
@@ -54,19 +58,20 @@ class TerminalCamera {
      * @param bass smoothed bass 0..1, [energy] the slow section loudness 0..1
      * @param kick strength 0..1 of an onset this frame, 0 otherwise
      * @param wide landscape: a wider sweep to match the wider view
+     * @param follow -1..1 where the cursor is across the page; the camera slides to keep the words in frame
      */
-    fun update(dt: Float, timeS: Float, intensity: Float, bass: Float, energy: Float, kick: Float, wide: Boolean) {
+    fun update(dt: Float, timeS: Float, intensity: Float, bass: Float, energy: Float, kick: Float, wide: Boolean, follow: Float = 0f) {
         val w = if (wide) 1.25f else 1f
         val t = timeS
         val k = intensity
         // slow cinematic orbit: periods of 20 s and up, wider as the section gets louder
         val sweep = (0.10f + 0.07f * energy) * k * w
-        val yawT = sweep * sin(t * 0.31f) + 0.05f * k * sin(t * 0.083f)
-        val pitchT = (0.045f + 0.02f * energy) * k * sin(t * 0.23f + 1.1f)
+        val yawT = baseYaw + sweep * sin(t * 0.31f) + 0.05f * k * sin(t * 0.083f)
+        val pitchT = basePitch + (0.045f + 0.02f * energy) * k * sin(t * 0.23f + 1.1f)
         val rollT = 0.02f * k * sin(t * 0.17f + 2.3f)
         // the bass breathes the camera toward the text; a louder section sits a little closer
         val dollyT = k * (0.05f * bass + 0.05f * energy)
-        val panXT = 0.035f * k * w * sin(t * 0.19f + 0.4f)
+        val panXT = 0.035f * k * w * sin(t * 0.19f + 0.4f) - 0.045f * follow.coerceIn(-1f, 1f)
         val panYT = 0.02f * k * sin(t * 0.27f + 2f)
 
         if (kick > 0f && k > 0f) {

@@ -1,7 +1,7 @@
 # Vantra V2 (partial): signing fix and Developer Playground fix
 
 Status: Phase 1 (signing/update safety) and Phase 3 (GitHub rate limits) implemented.
-Not started: Phase 1 backup/restore, Phase 2 Terminal redesign. Not compiled (no Android SDK in the build environment).
+Phase 2 Terminal redesign implemented (see TERMINAL_STYLE.md). Not started: Phase 1 backup/restore. Not compiled (no Android SDK in the build environment).
 
 ## Root cause: why updates needed an uninstall
 Android only updates an installed app in place when the new APK has the same applicationId AND
