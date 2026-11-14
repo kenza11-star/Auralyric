@@ -152,6 +152,8 @@ class TransferImporter @Inject constructor(
             db.beginTransaction()
             try {
                 if (mover.from.isNotEmpty()) rewritePaths(db, mover)
+                // zips made before tokens were stripped still carry them, and they are only valid for the old phone
+                runCatching { db.execSQL("UPDATE song SET libraryAddToken = NULL, libraryRemoveToken = NULL") }
                 if (localSongs.exists()) missing = relinkLocalSongs(db, JSONArray(localSongs.readText()))
                 db.setTransactionSuccessful()
             } finally {

@@ -27,7 +27,14 @@ extensions.configure<ApplicationExtension> {
         applicationId = "com.vantra.music"
         minSdk = 24
         targetSdk = 36
-        versionCode = 73
+        // monotonic: the committed base plus the CI run number, so every release is larger than the last one.
+        // Only CI can produce a release, and a CI build without a run number is refused rather than guessed.
+        val versionCodeBase = rootProject.file("signing/version-code-base.txt").readText().trim().toInt()
+        val ciRunNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
+        if (System.getenv("CI") == "true" && ciRunNumber == null) {
+            throw GradleException("CI build without GITHUB_RUN_NUMBER: the versionCode cannot be made monotonic")
+        }
+        versionCode = versionCodeBase + (ciRunNumber ?: 0)
         versionName = "8.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -136,24 +143,33 @@ extensions.configure<ApplicationExtension> {
     // used to make `assembleRelease` unbuildable and left debug as the only variant anyone ever
     // ran — and a debug Compose build is several times slower per frame than release, so all
     // local performance impressions were being formed against the wrong binary.
-    val hasReleaseSigning = System.getenv("STORE_PASSWORD") != null &&
-        System.getenv("KEY_ALIAS") != null &&
-        System.getenv("KEY_PASSWORD") != null &&
+    fun secret(name: String): String? = System.getenv(name)?.takeIf { it.isNotEmpty() }
+    val hasReleaseSigning = secret("STORE_PASSWORD") != null &&
+        secret("KEY_ALIAS") != null &&
+        secret("KEY_PASSWORD") != null &&
         file("keystore/release.keystore").exists()
 
+    // On CI a release build must never fall back to a debug key: a random key makes the APK a
+    // different app, so installed copies cannot be updated in place and users lose their data.
+    val isCi = System.getenv("CI") == "true"
+    val releaseRequested = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
+    // pull requests (fork PRs never get secrets) only build test APKs that are never released
+    val isPullRequest = System.getenv("GITHUB_EVENT_NAME") == "pull_request"
+    if (isCi && !isPullRequest && releaseRequested && !hasReleaseSigning) {
+        throw GradleException(
+            "Release signing is not configured on CI (STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD and " +
+                "keystore/release.keystore are required). Refusing to produce a non-updatable release APK."
+        )
+    }
+
     signingConfigs {
-        create("persistentDebug") {
-            storeFile = file("persistent-debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
         if (hasReleaseSigning) {
             create("release") {
                 storeFile = file("keystore/release.keystore")
-                storePassword = System.getenv("STORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
+                storeType = "PKCS12"
+                storePassword = secret("STORE_PASSWORD")
+                keyAlias = secret("KEY_ALIAS")
+                keyPassword = secret("KEY_PASSWORD")
             }
         }
         getByName("debug") {
@@ -174,13 +190,9 @@ extensions.configure<ApplicationExtension> {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Fall back to the debug keystore locally so a release-quality build is always
-            // runnable on a dev machine. CI still signs with the real key when secrets exist.
-            signingConfig = if (hasReleaseSigning) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            // Only the permanent release key ever signs a release. Without it the APK is left unsigned,
+            // so a random or debug key can never produce something that looks like a release.
+            signingConfig = if (hasReleaseSigning) signingConfigs.getByName("release") else null
         }
         debug {
             applicationIdSuffix = ".debug"

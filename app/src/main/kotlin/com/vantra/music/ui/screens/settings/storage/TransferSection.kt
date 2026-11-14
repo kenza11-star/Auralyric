@@ -50,16 +50,24 @@ internal fun TransferSection(viewModel: TransferViewModel = hiltViewModel()) {
         if (uri == null) return@rememberLauncherForActivityResult
         checkError = null
         scope.launch {
-            viewModel.check(uri)
-                .onSuccess { manifest ->
+            val checked = viewModel.check(uri)
+            checked.onFailure { checkError = it.message }
+            val manifest = checked.getOrNull() ?: return@launch
+            // the zip is checked, now show what it holds next to this phone before anything is replaced
+            val now = viewModel.currentCounts()
+            menuState.showConfirm(
+                title = "Replace your library?",
+                message = TransferViewModel.replaceSummary(manifest, now),
+                action = "Replace",
+                onConfirm = {
                     if (viewModel.wantsAudioPermission(manifest)) {
                         waitingForPermission = uri
                         audioPermission.launch(TransferViewModel.AudioPermission)
                     } else {
                         viewModel.importFrom(uri)
                     }
-                }
-                .onFailure { checkError = it.message }
+                },
+            )
         }
     }
 

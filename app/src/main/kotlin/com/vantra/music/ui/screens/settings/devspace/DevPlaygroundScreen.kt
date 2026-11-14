@@ -29,7 +29,11 @@ fun DevPlaygroundScreen(navController: NavController) {
     val loading by DevSpaceRepository.loading.collectAsState()
     val error by DevSpaceRepository.error.collectAsState()
     var reload by remember { mutableIntStateOf(0) }
-    LaunchedEffect(reload) { DevSpaceRepository.refresh(BuildConfig.BUILD_TIME_MILLIS, force = reload > 0) }
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    LaunchedEffect(reload) {
+        DevSpaceRepository.attach(appContext)
+        DevSpaceRepository.refresh(BuildConfig.BUILD_TIME_MILLIS, force = reload > 0)
+    }
     val settled = stats != null || !loading
 
     SubSettingsScaffold(

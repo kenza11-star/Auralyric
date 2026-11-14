@@ -55,8 +55,15 @@ logcat*.txt
 crash*.txt
 app/*.json
 
-# Keystores
+# Keystores: the release key must never be committed (see SIGNING.md)
 app/persistent-debug.keystore
+app/keystore/
+*.keystore
+*.jks
+*.p12
+*.pfx
+release-signing/
+signing/*.secret
 
 # Native & C++ build outputs
 .externalNativeBuild

@@ -31,6 +31,9 @@ import javax.inject.Singleton
 
 /** packs the whole library into one zip: database, play history, settings, the home algorithm, downloads and local copies, everything but logins */
 @Singleton
+/** the counts the import confirmation shows for both sides */
+data class TransferCounts(val songs: Int, val playlists: Int, val plays: Int)
+
 class TransferExporter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val database: MusicDatabase,
@@ -58,6 +61,9 @@ class TransferExporter @Inject constructor(
         val library = File(work, "library.db")
         val live = database.openHelper.writableDatabase
         snapshot(File(requireNotNull(live.path)), library, begin = live::beginTransaction, end = live::endTransaction)
+        // these tokens prove an account action, so they never leave the phone. Throws if the copy can't be scrubbed,
+        // which stops the export rather than shipping tokens.
+        scrubAccountTokens(library)
 
         val media = File(work, "media.db")
         val liveMedia = databaseProvider.writableDatabase
@@ -75,6 +81,7 @@ class TransferExporter @Inject constructor(
 
         val totalBytes = library.length() + (if (hasMedia) media.length() else 0L) + files.sumOf { it.second.length() }
         val manifest = readManifest(library, totalBytes, localSongs = localSongs.length())
+            .copy(streak = TransferArchive.streakSummary(settings))
 
         // "wt" empties a file picked twice, some providers like drive only know "w"
         val stream = runCatching { context.contentResolver.openOutputStream(target, "wt") }.getOrNull()
@@ -137,6 +144,24 @@ class TransferExporter @Inject constructor(
     }
 
     // the streaming cache stays behind, so its tables in media3's database go too
+    private fun scrubAccountTokens(library: File) {
+        SQLiteDatabase.openDatabase(library.path, null, SQLiteDatabase.OPEN_READWRITE).use { db ->
+            db.execSQL("UPDATE song SET libraryAddToken = NULL, libraryRemoveToken = NULL")
+            db.execSQL("VACUUM")
+        }
+    }
+
+    /** what this phone holds right now, for the import confirmation to compare against the zip */
+    fun currentCounts(): TransferCounts {
+        val db = database.openHelper.readableDatabase
+        fun count(sql: String) = runCatching { db.rawQuery(sql, null).use { if (it.moveToFirst()) it.getInt(0) else 0 } }.getOrDefault(0)
+        return TransferCounts(
+            songs = count("SELECT COUNT(*) FROM song WHERE inLibrary IS NOT NULL OR liked = 1"),
+            playlists = count("SELECT COUNT(*) FROM playlist"),
+            plays = count("SELECT COUNT(*) FROM event"),
+        )
+    }
+
     private fun dropStreamingCacheIndex(media: File) {
         val uids = File(context.filesDir, "exoplayer").listFiles { file -> file.name.endsWith(".uid") }
             ?.map { it.name.removeSuffix(".uid") }.orEmpty()

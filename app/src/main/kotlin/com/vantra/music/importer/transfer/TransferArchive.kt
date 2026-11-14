@@ -19,6 +19,7 @@ import com.vantra.music.constants.AccountChannelHandleKey
 import com.vantra.music.constants.AccountEmailKey
 import com.vantra.music.constants.AccountNameKey
 import com.vantra.music.constants.DataSyncIdKey
+import com.vantra.music.constants.DeeplApiKey
 import com.vantra.music.constants.DiscordAccessTokenKey
 import com.vantra.music.constants.DiscordLoginStateKey
 import com.vantra.music.constants.DiscordLoginVerifierKey
@@ -34,6 +35,10 @@ import com.vantra.music.constants.LastFMUsernameKey
 import com.vantra.music.constants.LibreFmSessionKey
 import com.vantra.music.constants.LibreFmUsernameKey
 import com.vantra.music.constants.MonochromePlaybackApiTokenKey
+import com.vantra.music.constants.MonochromeTurnstileJwtExpiryKey
+import com.vantra.music.constants.MonochromeTurnstileJwtKey
+import com.vantra.music.constants.OpenRouterApiKey
+import com.vantra.music.constants.ProxyPasswordKey
 import com.vantra.music.constants.TurnstileBypassTokenKey
 import com.vantra.music.constants.VisitorDataKey
 import org.json.JSONArray
@@ -67,15 +72,28 @@ internal object TransferArchive {
         "display" to "vantra_settings",
     )
 
-    // sign-ins and tokens stay behind, the new app signs in again instead of carrying them around in a zip
+    // sign-ins, tokens, passwords and API keys stay behind, the new app signs in again and asks for keys again
+    // instead of carrying them around in a zip. Exports never write these, and imports drop them even from old zips.
     val LoginKeys: Set<String> = setOf(
         InnerTubeCookieKey, VisitorDataKey, DataSyncIdKey, AccountNameKey, AccountEmailKey, AccountChannelHandleKey,
         DiscordAccessTokenKey, DiscordRefreshTokenKey, DiscordTokenExpiresAtKey, DiscordLoginStateKey,
         DiscordLoginVerifierKey, DiscordProfileKey, EnableDiscordRPCKey,
         LastFMSessionKey, LastFMUsernameKey, EnableLastFMScrobblingKey,
         LibreFmSessionKey, LibreFmUsernameKey, EnableLibreFmScrobblingKey,
-        MonochromePlaybackApiTokenKey, TurnstileBypassTokenKey,
+        MonochromePlaybackApiTokenKey, MonochromeTurnstileJwtKey, MonochromeTurnstileJwtExpiryKey, TurnstileBypassTokenKey,
+        ProxyPasswordKey, OpenRouterApiKey, DeeplApiKey,
     ).map { it.name }.toSet()
+
+    /** streak facts for the import confirmation, read from the exported settings json (typed values) */
+    fun streakSummary(settings: JSONObject): StreakSummary {
+        fun value(name: String): Any? = settings.optJSONObject(name)?.opt("v")
+        return StreakSummary(
+            unlocked = value("streakUnlocked") as? Boolean ?: false,
+            recoveryUsed = (value("streakRecoveryUsed") as? Number)?.toInt() ?: 0,
+            recoveredDays = (value("streakRecoveredDays") as? String)
+                ?.split(',')?.count { it.isNotBlank() } ?: 0,
+        )
+    }
 
     // top-level things in the files folder that stay behind: the streaming cache, settings (sent as json),
     // caches, crash notes, the saved queue (java objects tied to class names) and folder picks android won't hand over
@@ -185,6 +203,13 @@ internal fun foldIntoOneFile(db: SQLiteDatabase) {
 }
 
 /** what the manifest says about a zip, enough to check it and to tell the user what's inside */
+/** streak state carried in the manifest, so the import can say what it will put back */
+data class StreakSummary(
+    val unlocked: Boolean = false,
+    val recoveryUsed: Int = 0,
+    val recoveredDays: Int = 0,
+)
+
 data class TransferManifest(
     val formatVersion: Int,
     val createdAt: Long,
@@ -197,6 +222,7 @@ data class TransferManifest(
     val plays: Int,
     val localSongs: Int,
     val bytes: Long,
+    val streak: StreakSummary = StreakSummary(),
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("format", TransferArchive.Format)
@@ -211,6 +237,10 @@ data class TransferManifest(
         .put("plays", plays)
         .put("localSongs", localSongs)
         .put("bytes", bytes)
+        .put("streak", JSONObject()
+            .put("unlocked", streak.unlocked)
+            .put("recoveryUsed", streak.recoveryUsed)
+            .put("recoveredDays", streak.recoveredDays))
 
     companion object {
         /** null when the json isn't a transfer manifest at all */
@@ -228,6 +258,13 @@ data class TransferManifest(
                 plays = json.optInt("plays"),
                 localSongs = json.optInt("localSongs"),
                 bytes = json.optLong("bytes"),
+                streak = json.optJSONObject("streak")?.let {
+                    StreakSummary(
+                        unlocked = it.optBoolean("unlocked"),
+                        recoveryUsed = it.optInt("recoveryUsed"),
+                        recoveredDays = it.optInt("recoveredDays"),
+                    )
+                } ?: StreakSummary(),
             )
         }
     }

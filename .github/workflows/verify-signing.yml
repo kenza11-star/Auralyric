@@ -1,0 +1,44 @@
+name: Verify signing key (read-only)
+
+# Manual only. Never runs on push or pull request, so secrets are never given to a fork or an unreviewed change.
+# It builds nothing, uploads nothing, and does not change, replace or delete any secret.
+on:
+  workflow_dispatch:
+    inputs:
+      installed_sha256:
+        description: "Installed app certificate SHA-256 (leave empty to use signing/installed-certificate-sha256.txt)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    name: Compare installed certificate with the stored key
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 21 (for keytool)
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Compare (read-only)
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          INPUT_SHA256: ${{ github.event.inputs.installed_sha256 }}
+        run: |
+          INSTALLED_SHA256="${INPUT_SHA256:-$(cat signing/installed-certificate-sha256.txt)}"
+          export INSTALLED_SHA256
+          code=0
+          bash scripts/signing/compare-certificates.sh || code=$?
+          # MATCH, MISMATCH, SECRETS_MISSING and KEYSTORE_UNUSABLE are answers, not crashes: the verdict is in the summary
+          if [ "$code" = 0 ] || [ "$code" = 10 ] || [ "$code" = 11 ] || [ "$code" = 12 ]; then exit 0; fi
+          exit "$code"

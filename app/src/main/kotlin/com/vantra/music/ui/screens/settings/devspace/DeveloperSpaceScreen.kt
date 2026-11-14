@@ -67,7 +67,12 @@ fun DeveloperSpaceScreen(navController: NavController, initialPage: Int = 0) {
     val loading by DevSpaceRepository.loading.collectAsState()
 
     // every open asks GitHub again; the playground page reuses what this fetched
-    LaunchedEffect(Unit) { DevSpaceRepository.refresh(BuildConfig.BUILD_TIME_MILLIS, force = true) }
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    LaunchedEffect(Unit) {
+        DevSpaceRepository.attach(appContext)
+        // lazy: uses the saved copy when it is fresh, instead of spending the rate limit on every visit
+        DevSpaceRepository.refresh(BuildConfig.BUILD_TIME_MILLIS, force = false)
+    }
 
     val pagerState = rememberPagerState(initialPage = initialPage.coerceIn(0, DevPeople.lastIndex)) { DevPeople.size }
     val scrollStates = DevPeople.map { rememberScrollState() }

@@ -189,6 +189,7 @@ internal fun RepoIssuesSection(
             when {
                 stats == null && loading -> repeat(3) { SkeletonRow() }
                 stats == null -> RetryNote(error ?: "Couldn't reach GitHub", onRetry)
+                stats?.issues == null -> RetryNote(error ?: "Couldn't load the issue list", onRetry)
                 shown.isEmpty() -> Note(if (open.isEmpty()) "No open issues. Nice." else "No ${filter.label.lowercase()} issues open.")
                 else -> IssueList(shown, showAllOpen, context) { showAllOpen = true }
             }
