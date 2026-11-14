@@ -7,12 +7,23 @@ has to uninstall, which deletes their data.
 This document covers the setup, the migration check, backup, and verification. Read sections 1 and 2 before
 changing anything.
 
+## Status (verified from your GitHub runs)
+
+- Verify signing key run #2: **MATCH**. The stored keystore (PKCS12) holds the key that signed your installed app,
+  alias `vantra`, certificate SHA-256 `cde6689e269798fac35b611f1e9dc4196887e94df4ea5974510cc38f175c9930`.
+  The private key decrypts with the store password, so the key password is the store password.
+- `signing/release-certificate-sha256.txt` is now pinned to that fingerprint.
+- Release builds need only two secrets: `RELEASE_KEYSTORE_BASE64` and `RELEASE_STORE_PASSWORD`. `RELEASE_KEY_ALIAS`
+  and `RELEASE_KEY_PASSWORD` are optional: if absent, CI reads the alias from the keystore (only when it holds exactly
+  one key) and uses the store password as the key password. You don't have to add either. If you do add them, use
+  `vantra` and the same value as the store password.
+
 ## 0. What is enforced automatically
 
 | Rule | Where it is enforced |
 |---|---|
 | A release is signed only with the permanent key. CI never creates a random or debug key. | `scripts/signing/restore-release-keystore.sh`, `app/build.gradle.kts` (no debug fallback for release) |
-| All four `RELEASE_*` secrets must be present on any run that isn't a pull request. | `restore-release-keystore.sh` |
+| `RELEASE_KEYSTORE_BASE64` and `RELEASE_STORE_PASSWORD` must be present on any run that isn't a pull request (alias and key password are optional). | `restore-release-keystore.sh` |
 | The keystore opens, the alias exists, the private key decrypts, and the certificate equals the pinned fingerprint. | `scripts/signing/verify-release-keystore.sh` |
 | The built APK is signed by exactly one certificate, and it's the pinned one. Otherwise nothing is uploaded. | `scripts/signing/verify-apk.sh` |
 | The keystore is never committed. | `.gitignore` (`app/keystore/`, `*.keystore`, `*.p12`, `*.jks`) |

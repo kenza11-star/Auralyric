@@ -89,8 +89,8 @@ jobs:
           LIBREFM_SECRET: ${{ secrets.LIBREFM_SECRET }}
           DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
           STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS || steps.signing.outputs.alias }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD || secrets.RELEASE_STORE_PASSWORD }}
         run: |
           # a download that hit a 5xx stays cached, so the next attempt only fetches what's missing
           for i in 1 2 3 4; do

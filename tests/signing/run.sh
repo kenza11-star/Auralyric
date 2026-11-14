@@ -72,8 +72,19 @@ grep -q "signed=true" "$GHO" && check "restore: reports signed=true" 0 0 || chec
 # T10: invalid base64
 check "restore: invalid base64 fails" 1 "$(RELEASE_KEYSTORE_BASE64='@@not base64@@' RELEASE_STORE_PASSWORD="$PASS" RELEASE_KEY_ALIAS=x RELEASE_KEY_PASSWORD="$PASS" RELEASE_KEYSTORE_FILE="$WORK/ci2/k" GITHUB_OUTPUT=/dev/null EVENT_NAME=push run bash "$S/restore-release-keystore.sh")"
 
-# T11: one secret missing on a non-PR run
-check "restore: missing secret on push fails" 1 "$(RELEASE_KEYSTORE_BASE64="$(cat "$WORK/b64.txt")" RELEASE_STORE_PASSWORD="$PASS" RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD="$PASS" RELEASE_KEYSTORE_FILE="$WORK/ci3/k" GITHUB_OUTPUT=/dev/null EVENT_NAME=push run bash "$S/restore-release-keystore.sh")"
+# T11: the store password missing on a non-PR run still fails; alias and key password are optional
+check "restore: missing store password on push fails" 1 "$(RELEASE_KEYSTORE_BASE64="$(cat "$WORK/b64.txt")" RELEASE_STORE_PASSWORD= RELEASE_KEY_ALIAS=vantra-release RELEASE_KEY_PASSWORD="$PASS" RELEASE_KEYSTORE_FILE="$WORK/ci3/k" GITHUB_OUTPUT=/dev/null EVENT_NAME=push run bash "$S/restore-release-keystore.sh")"
+GHO3="$WORK/gh-output-3"; : > "$GHO3"
+check "restore: only keystore + store password (the real CI case) passes" 0 "$(RELEASE_KEYSTORE_BASE64="$(cat "$WORK/b64.txt")" RELEASE_STORE_PASSWORD="$PASS" RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= RELEASE_KEYSTORE_FILE="$WORK/ci5/k" GITHUB_OUTPUT="$GHO3" EVENT_NAME=push PINNED_FILE="$PINNED_FILE" run bash "$S/restore-release-keystore.sh")"
+grep -q "^signed=true" "$GHO3" && grep -q "^alias=vantra-release$" "$GHO3" && check "restore: alias read from the keystore into the step output" 0 0 || check "restore: alias read from the keystore into the step output" 0 1
+check "restore: only one of the two required secrets fails" 1 "$(RELEASE_KEYSTORE_BASE64= RELEASE_STORE_PASSWORD="$PASS" RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= RELEASE_KEYSTORE_FILE="$WORK/ci6/k" GITHUB_OUTPUT=/dev/null EVENT_NAME=push run bash "$S/restore-release-keystore.sh")"
+
+# two private keys and no alias given: ambiguous, must fail and not guess
+TWO="$WORK/two.p12"
+keytool -genkeypair -storetype PKCS12 -keystore "$TWO" -storepass twopass123 -alias one -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=One" >/dev/null 2>&1
+keytool -genkeypair -storetype PKCS12 -keystore "$TWO" -storepass twopass123 -alias two -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=Two" >/dev/null 2>&1
+echo UNSET > "$WORK/unset2.txt"
+check "verify: two keys and no alias is ambiguous and fails" 1 "$(RELEASE_KEYSTORE_FILE="$TWO" RELEASE_STORE_PASSWORD=twopass123 RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= PINNED_FILE="$WORK/unset2.txt" run bash "$S/verify-release-keystore.sh")"
 
 # T12: pull request without secrets is allowed, unsigned
 GHO2="$WORK/gh-output-2"; : > "$GHO2"

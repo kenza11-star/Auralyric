@@ -18,10 +18,10 @@ fail() {
 KEYSTORE="${RELEASE_KEYSTORE_FILE:-app/keystore/release.keystore}"
 PINNED_FILE="${PINNED_FILE:-signing/release-certificate-sha256.txt}"
 
-for name in RELEASE_STORE_PASSWORD RELEASE_KEY_ALIAS RELEASE_KEY_PASSWORD; do
-  [ -n "${!name:-}" ] || fail "$name is missing. Set all four release secrets, see SIGNING.md."
-done
+[ -n "${RELEASE_STORE_PASSWORD:-}" ] || fail "RELEASE_STORE_PASSWORD is missing. See SIGNING.md."
 [ -s "$KEYSTORE" ] || fail "keystore file is missing or empty: $KEYSTORE"
+# The key password of a PKCS12 keystore is its store password, so an unset RELEASE_KEY_PASSWORD means exactly that.
+RELEASE_KEY_PASSWORD="${RELEASE_KEY_PASSWORD:-$RELEASE_STORE_PASSWORD}"
 
 # A PKCS12 keystore stores the key under the store password, so a different key password cannot work.
 # Requiring them to be equal makes that mistake impossible instead of confusing to debug.
@@ -30,6 +30,19 @@ done
 
 # passwords go through the environment, so they never appear on a command line or in the process list
 export VANTRA_KS_PASS="$RELEASE_STORE_PASSWORD"
+
+# 0. no alias given: use the only private-key entry, or stop and list the choices (aliases are public)
+if [ -z "${RELEASE_KEY_ALIAS:-}" ]; then
+  export VANTRA_KS_PASS="$RELEASE_STORE_PASSWORD"
+  all="$(keytool -J-Duser.language=en -list -v -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env VANTRA_KS_PASS 2>/dev/null)" \
+    || fail "the keystore won't open with RELEASE_STORE_PASSWORD"
+  aliases="$(printf '%s\n' "$all" | awk '/^Alias name:/ { a=$0; sub(/^Alias name: */, "", a) } /^Entry type: *PrivateKeyEntry/ { print a }')"
+  count="$(printf '%s\n' "$aliases" | grep -c . || true)"
+  [ "$count" = 1 ] || fail "RELEASE_KEY_ALIAS is not set and the keystore has $count private keys, so the alias is ambiguous. Aliases: $(printf '%s' "$aliases" | tr '\n' ' ')"
+  RELEASE_KEY_ALIAS="$aliases"
+  echo "release key alias (read from the keystore): $RELEASE_KEY_ALIAS"
+fi
+[ -z "${ALIAS_OUT_FILE:-}" ] || printf '%s' "$RELEASE_KEY_ALIAS" > "$ALIAS_OUT_FILE"
 
 # 1. the keystore opens with this password and holds this alias
 listing="$(keytool -list -v -keystore "$KEYSTORE" -storetype PKCS12 \

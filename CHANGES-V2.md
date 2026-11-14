@@ -189,3 +189,16 @@ Read `SIGNING.md` first. It covers the migration check, key creation, the four s
 - `SECRETS_MISSING` now means only keystore or store password absent. A wrong or unknown alias is reported, not fatal.
 - Tests: 49 of 49 pass (added no-alias, wrong-store-password, JKS different-key-password, no-leak checks).
 - Still read-only: no secret is written or replaced, no keystore is created.
+
+### Fix: "Upload ZIP files" CI failure (build #84, #85)
+- "Upload ZIP files" is the commit message of the push, not a workflow: the failing workflow was "CI & Release Build".
+- Verified from the log: step "Restore and verify the permanent release key" failed with
+  "all four secrets must be set (...). Found 2. Refusing to build a release...". The cause was our own check in
+  `restore-release-keystore.sh`, which required RELEASE_KEY_ALIAS and RELEASE_KEY_PASSWORD although only the keystore and
+  store password exist. The build never reached Gradle.
+- Fix: only keystore + store password are required. Alias is read from the keystore (single private key only; with
+  several keys it fails and lists them). Key password defaults to the store password (PKCS12). The workflow's build step
+  uses `secrets.RELEASE_KEY_ALIAS || steps.signing.outputs.alias` and `secrets.RELEASE_KEY_PASSWORD || secrets.RELEASE_STORE_PASSWORD`.
+- `signing/release-certificate-sha256.txt` pinned to the verified fingerprint (it was UNSET).
+- Tests: 53 checks (restore with only two secrets, alias to step output, ambiguous alias fails).
+- The signing fix is verified by tests only. The Gradle build after it has still never been run by us.
