@@ -5,28 +5,28 @@ import kotlin.math.min
 /** The editor palette, as ARGB ints so drawing never builds a Color. */
 internal object TerminalPalette {
     /** control flow: if else while for switch case break continue return */
-    const val Keyword = 0xFFFF5C5C.toInt()
+    const val Keyword = 0xFFFF9A82.toInt()
 
     /** declarations: const let var fun class object function async await suspend emit collect */
-    const val Declare = 0xFFC792EA.toInt()
-    const val Function = 0xFFFFB454.toInt()
+    const val Declare = 0xFF79B8FF.toInt()
+    const val Function = 0xFFE3C078.toInt()
     const val Type = 0xFF7EB6FF.toInt()
     const val Number = 0xFF79C0FF.toInt()
     const val Constant = 0xFFFF9E64.toInt()
     const val Quoted = 0xFFF0A35E.toInt()
     const val Ink = 0xFFE6EDF3.toInt()
     const val Punct = 0xFF9AA4B2.toInt()
-    const val Operator = 0xFFFF6B6B.toInt()
+    const val Operator = 0xFFB6C2CF.toInt()
     const val Comment = 0xFF6F7C8A.toInt()
 
-    /** the song's own words: the brightest, warmest colour in the scene so they always read first */
-    const val Lyric = 0xFFFFF0D2.toInt()
+    /** the song's own words: high-contrast neutral ink, distinct from syntax colours */
+    const val Lyric = 0xFFF5F7FA.toInt()
     const val Gutter = 0xFF5B6370.toInt()
-    const val Cursor = 0xFFFF2A2A.toInt()
+    const val Cursor = 0xFFE8EDF2.toInt()
     const val Glow = 0xFFFF8A3D.toInt()
 
     /** nested brackets cycle through these, by depth */
-    val Brackets = intArrayOf(0xFFFFD166.toInt(), 0xFFEF8CFF.toInt(), 0xFF6CE0FF.toInt())
+    val Brackets = intArrayOf(0xFFFFD166.toInt(), 0xFF9CC6DB.toInt(), 0xFF6CE0FF.toInt())
 }
 
 /** Bit flags in the fourth number of every span. */
@@ -53,11 +53,11 @@ internal object TerminalSyntax {
 
     private val control = hashSetOf(
         "if", "else", "while", "for", "switch", "case", "break", "continue", "return", "do", "try", "catch",
-        "when", "yield", "throw", "default",
+        "when", "yield", "throw", "default", "finally",
     )
     private val declare = hashSetOf(
         "const", "let", "var", "val", "function", "async", "await", "class", "object", "fun", "suspend",
-        "emit", "collect", "import", "from", "export", "new", "in", "of",
+        "emit", "collect", "import", "from", "export", "new", "in", "of", "override", "private", "public",
     )
     private val constants = hashSetOf("true", "false", "null", "this", "it", "undefined")
     private val ops3 = arrayOf("===", "!==")

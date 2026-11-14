@@ -1,0 +1,51 @@
+name: Terminal V3 Stage 1 verification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'app/src/main/kotlin/com/vantra/music/ui/player/terminal/**'
+      - 'app/src/test/kotlin/com/vantra/music/ui/player/terminal/**'
+      - '.github/workflows/terminal-stage1-check.yml'
+  push:
+    paths:
+      - 'app/src/main/kotlin/com/vantra/music/ui/player/terminal/**'
+      - 'app/src/test/kotlin/com/vantra/music/ui/player/terminal/**'
+      - '.github/workflows/terminal-stage1-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terminal-stage1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+      - name: Apply the existing legacy source cleanup
+        run: bash .github/scripts/remove-old-source.sh
+      - name: Compile Android integration and run unit tests
+        run: gradle :app:compileArm64FossDebugKotlin :app:testArm64FossDebugUnitTest --no-configuration-cache --console=plain
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terminal-stage1-test-reports
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
+          if-no-files-found: warn

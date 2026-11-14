@@ -69,6 +69,7 @@ class TerminalCoreTest {
         val wanted = listOf(
             "if", "else", "else if", "while", "for", "switch", "case", "break", "continue", "return", "const", "let",
             "function", "async", "await", "class", "object", "fun", "suspend", "emit", "collect",
+            "finally", "throw", "import", "override", "private", "public", "null", "true", "false", "++", "--",
             "()", "{}", "[]", ";", ":", ".", ",", "=>", "->", "===", "!=", "&&", "||", "?.", "?:",
         )
         for (w in wanted) assertTrue("missing '$w'", code.contains(w))
@@ -206,7 +207,10 @@ class TerminalCoreTest {
         TerminalSyntax.code("if (a === b) {", 0, out, Lexer())
         fun colourOf(start: Int): Int {
             var k = 0
-            while (k < out.size) { if (out[k] == start) return out[k + 2]; k += 4 }
+            while (k < out.size) {
+                if (out[k] == start) return out[k + 2]
+                k += 4
+            }
             return -1
         }
         assertEquals(TerminalPalette.Keyword, colourOf(0))
@@ -214,6 +218,114 @@ class TerminalCoreTest {
         assertEquals(TerminalPalette.Brackets[0], colourOf(3))
         // the closing bracket matches its opening one
         assertEquals(colourOf(3), colourOf(11))
+    }
+
+    @Test
+    fun minimumWidthAndLongUnicodeLyricsStayBounded() {
+        val words = listOf("漢字かなカナ".repeat(20), "music 🎵 e\u0301 ".repeat(30), "x".repeat(300))
+        for (columns in listOf(22, 26, 34, 70)) {
+            val doc = TerminalDocument.build(LongArray(words.size) { it * 10_000L }, words, columns)
+            for (line in doc.lines) assertEquals(line.text, lyricOf(doc, line))
+            for (row in doc.rows) {
+                assertTrue("width $columns: ${row.text}", row.text.length <= columns)
+                if (row.kind == KindLyric) {
+                    val part = row.text.substring(row.lyricFrom, row.lyricTo)
+                    assertTrue(part.isEmpty() || !part.first().isLowSurrogate())
+                    assertTrue(part.isEmpty() || !part.last().isHighSurrogate())
+                    assertTrue(part.isEmpty() || Character.getType(part.first()) != Character.NON_SPACING_MARK.toInt())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun everyRequiredKeywordIsRecognized() {
+        for (word in listOf("finally", "override", "private", "public")) {
+            val spans = ArrayList<Int>()
+            TerminalSyntax.code(word, 0, spans, Lexer())
+            assertTrue("unrecognized $word", spans[2] == TerminalPalette.Keyword || spans[2] == TerminalPalette.Declare)
+        }
+    }
+
+    @Test
+    fun wideGlyphsUseMeasuredWidthAndKeepTheOriginalText() {
+        val text = "漢字かな 🎵 next ".repeat(12)
+        val measure: (String) -> Float = { value -> value.sumOf { if (it.code > 126) 2 else 1 }.toFloat() }
+        val doc = TerminalDocument.build(longArrayOf(0L), listOf(text), 30, measure = measure)
+        assertEquals(text, lyricOf(doc, doc.lines[0]))
+        for (row in doc.rows) assertTrue("measured overflow: ${row.text}", measure(row.text) <= doc.columns)
+    }
+
+    @Test
+    fun wrappingKeepsNormalLyricsInOneStableViewingRegion() {
+        val doc = TerminalDocument.build(longArrayOf(0L), listOf("a line that needs several rows of text to be fully readable"), 22)
+        val c = TerminalCursor()
+        doc.locate(0L, true, c)
+        val first = doc.focusRow(c, 20)
+        doc.locate(500L, true, c)
+        assertEquals(first, doc.focusRow(c, 20), 0f)
+        assertTrue(first >= doc.lines[0].lyricFirst)
+    }
+
+    @Test
+    fun absentLyricsNeverTurnTrackMetadataIntoTimedWords() {
+        val doc = TerminalDocument.unavailable(22)
+        assertTrue(doc.isEmpty)
+        assertTrue(doc.rows.none { it.kind == KindLyric })
+        assertTrue(doc.rows.any { "no synced lyrics" in it.text })
+        val c = TerminalCursor()
+        doc.locate(10_000L, true, c)
+        assertTrue(c.idle)
+        assertTrue(c.row in doc.rows.indices)
+    }
+
+    @Test
+    fun typingDoesNotRevealHalfASurrogateOrCombiningSequence() {
+        val doc = TerminalDocument.build(longArrayOf(0L), listOf("🎵e\u0301".repeat(12)), 30)
+        val c = TerminalCursor()
+        for (ms in 0L..2_500L step 13) {
+            doc.locate(ms, true, c)
+            val typed = doc.lines[0].text.take(c.typed)
+            assertTrue(typed.isEmpty() || !typed.last().isHighSurrogate())
+            assertTrue(c.typed == doc.lines[0].text.length || doc.lines[0].text[c.typed] != '\u0301')
+        }
+    }
+
+    @Test
+    fun shortLandscapeKeepsBothNeighborLyricsWithoutSqueezingBaselines() {
+        val times = longArrayOf(0L, 4_000L, 8_000L)
+        val doc = TerminalDocument.build(times, listOf("first", "second", "third"), 60)
+        val c = TerminalCursor()
+        for (i in times.indices) {
+            doc.locate(times[i], false, c)
+            val selected = doc.viewportRows(c, 8)
+            assertTrue(selected.size <= 8)
+            assertTrue(selected.toList() == selected.sorted())
+            val focusSlot = selected.indexOf(doc.lines[i].lyricFirst)
+            assertTrue(focusSlot >= 0)
+            if (i > 0) {
+                val previous = selected.indexOf(doc.lines[i - 1].lyricFirst)
+                assertTrue(previous >= 0 && focusSlot - previous <= 3)
+            }
+            if (i < times.lastIndex) {
+                val next = selected.indexOf(doc.lines[i + 1].lyricFirst)
+                assertTrue(next >= 0 && next - focusSlot <= 3)
+            }
+        }
+    }
+
+    @Test
+    fun activeWordsHavePriorityOverCodeWhenAllWordsAndNeighborsFit() {
+        val doc = TerminalDocument.build(longArrayOf(0L, 4_000L, 8_000L), listOf("previous", "word ".repeat(11), "next"), 22)
+        val c = TerminalCursor()
+        doc.locate(4_000L, true, c)
+        val active = doc.lines[1]
+        val selected = doc.viewportRows(c, 8)
+        assertTrue(active.lyricCount <= 6)
+        for (r in active.lyricFirst until active.lyricFirst + active.lyricCount) assertTrue(r in selected)
+        assertTrue(doc.lines[0].lyricFirst in selected)
+        assertTrue(doc.lines[2].lyricFirst in selected)
+        assertTrue(selected.size <= 8)
     }
 
     // ---- beats ----

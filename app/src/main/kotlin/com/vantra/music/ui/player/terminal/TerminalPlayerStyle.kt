@@ -50,6 +50,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
@@ -103,7 +104,7 @@ private val Red = Color(TerminalPalette.Cursor)
 
 /**
  * The Terminal player style: the song's synced lyrics typed out as syntax-highlighted code in a
- * dark 3D scene, with a camera that moves to the music. It sits in the same frame as the other
+ * continuous dark editor plane, with the existing camera moving to the music. It sits in the same frame as the other
  * alternate styles (gestures, the ••• menu, the quarter turn), reads the same playback state and
  * lyrics, and keeps all drawing inside [TerminalScene] so a renderer failure can't reach playback.
  */
@@ -168,7 +169,12 @@ fun TerminalPlayerStyle(actions: StyleActions, modifier: Modifier = Modifier, pr
                 landscape = landscape,
                 preview = preview,
                 source = source,
-                modifier = Modifier.fillMaxSize(),
+                modifier = if (preview) Modifier.fillMaxSize().padding(6.dp) else Modifier.fillMaxSize().padding(
+                    start = insets.start + 4.dp,
+                    top = insets.top + 72.dp,
+                    end = insets.end + (if (landscape) 60.dp else 4.dp),
+                    bottom = insets.bottom + (if (landscape) 28.dp else 104.dp),
+                ),
             )
             if (!preview) {
                 TerminalChrome(
@@ -241,20 +247,25 @@ private fun TerminalScene(
     val typingPref by com.vantra.music.utils.rememberPreference(TerminalTypingKey, defaultValue = true)
     val lowDevice = remember(context) { isLowEndDevice(context) }
 
-    val cols = remember(size, landscape) { renderer.layout(size.width, size.height, landscape) }
-    val doc = remember(lines, track.title, track.artist, cols) { buildDocument(lines, track, cols) }
+    val density = LocalDensity.current
+    val cols = remember(size, landscape, density.density, density.fontScale) {
+        renderer.layout(size.width, size.height, landscape, density.density, density.fontScale)
+    }
+    val doc = remember(lines, track.title, track.artist, cols, density.fontScale) {
+        buildDocument(lines, track, cols, renderer::measureColumns)
+    }
     val docNow by rememberUpdatedState(doc)
     val landscapeNow by rememberUpdatedState(landscape)
     val playing = connection?.isPlaying?.collectAsState()?.value == true
     val showing = rememberStyleShowing()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    // a selector card: one still frame of the scene, from an angle so it reads as 3D
+    // A selector card uses the same editor and camera, held on a still frame.
     if (preview) {
         LaunchedEffect(doc, size, landscape) {
             val s = state
             doc.locate(position.positionMs(), typing = false, out = s.cursor)
-            s.scroll.snap(s.cursor.row.toFloat())
+            s.scroll.snap(doc.focusRow(s.cursor, renderer.visibleRows()))
             s.camera.reset()
             s.camera.baseYaw = if (landscape) 0.10f else 0.06f
             s.camera.basePitch = -0.09f
@@ -296,7 +307,7 @@ private fun TerminalScene(
                             val p = conn.player.currentPosition
                             // a seek, or lyrics arriving, while paused: wake up and move to it
                             docNow.locate(position.positionMs(), typingPref && AppMotion.durationScale.scaleFactor != 0f, s.cursor)
-                            if (p != lastPos || abs(s.cursor.row - s.scroll.value) > 0.02f) calm = 0f
+                            if (p != lastPos || abs(docNow.focusRow(s.cursor, renderer.visibleRows()) - s.scroll.value) > 0.02f) calm = 0f
                             frame.longValue++
                             continue
                         }
@@ -356,7 +367,7 @@ private fun TerminalScene(
                             s.lastLine = s.cursor.line
                         }
 
-                        val target = s.cursor.row.toFloat()
+                        val target = docNow.focusRow(s.cursor, renderer.visibleRows())
                         if (!s.primed || abs(target - s.scroll.value) > 14f) {
                             s.scroll.snap(target)
                             s.primed = true
@@ -417,19 +428,19 @@ private fun TerminalScene(
 
 private const val BlinkPollMs = 265L
 
-/** The song as a document: its synced lyrics as they were sent, or, with none, its title and artist. */
-private fun buildDocument(lines: List<LyricsEntry>, track: StyleTrack, columns: Int): TerminalDocument {
+/** Real synchronized lyrics only; absent lyrics produce a code-only status document. */
+private fun buildDocument(
+    lines: List<LyricsEntry>, track: StyleTrack, columns: Int, measure: (String) -> Float,
+): TerminalDocument {
     if (lines.isNotEmpty()) {
         val times = LongArray(lines.size) { lines[it].time }
         // a line break or tab can't be drawn in a row; each becomes one space, so every position stays the same
         val texts = lines.map { entry ->
             if (entry.text.any { it == '\n' || it == '\r' || it == '\t' }) entry.text.map { if (it == '\n' || it == '\r' || it == '\t') ' ' else it }.joinToString("") else entry.text
         }
-        return TerminalDocument.build(times, texts, columns, track.title, track.artist)
+        return TerminalDocument.build(times, texts, columns, track.title, track.artist, measure)
     }
-    val head = listOf(track.title, track.artist).filter { it.isNotBlank() }
-    if (head.isEmpty()) return TerminalDocument.empty()
-    return TerminalDocument.build(LongArray(head.size) { it * 900L }, head, columns, track.title, track.artist)
+    return TerminalDocument.unavailable(columns)
 }
 
 // ---- the chrome around the scene ---------------------------------------------------------
@@ -483,7 +494,7 @@ private fun TerminalChrome(
                     .height(2.dp)
                     .drawBehind {
                         drawRect(Color.White.copy(alpha = 0.12f))
-                        val f = (position.positionMs().toFloat() / duration).coerceIn(0f, 1f)
+                        val f = (position.positionMs().toFloat() / duration.coerceAtLeast(1L)).coerceIn(0f, 1f)
                         drawRect(Red, size = androidx.compose.ui.geometry.Size(size.width * f, size.height))
                     },
             )
