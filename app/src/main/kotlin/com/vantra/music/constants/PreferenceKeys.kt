@@ -649,10 +649,12 @@ enum class PlayerStyle(val displayName: String, val selectorName: String) {
     BEDSIDE("Bedside clock", "Big clock"),
     // the nightstand as two tiles side by side, the music on one and the lyrics or a clock on the other, each scrolled on its own
     BEDSIDE_TILES("Bedside", "Bedside"),
+    // lyrics typed out as syntax-highlighted code in a dark 3D scene, the camera moving with the beat
+    TERMINAL("Terminal", "Terminal"),
     // a look module's own player, drawn from its layout; kept last so the others keep their places, and only offered while such a module is on
     MODULE("Module", "Module");
 
-    val editable: Boolean get() = this == FLAGSHIP || this == CLASSIC || this == TURNTABLE || this == POSTER || this == IPOD || isBedside
+    val editable: Boolean get() = this == FLAGSHIP || this == CLASSIC || this == TURNTABLE || this == POSTER || this == IPOD || this == TERMINAL || isBedside
 
     // the two nightstand styles share their sheet, their night look and their lock screen rules
     val isBedside: Boolean get() = this == BEDSIDE || this == BEDSIDE_TILES
@@ -687,11 +689,42 @@ enum class PlayerStyle(val displayName: String, val selectorName: String) {
             listOf(POSTER),
             // the lyrics stage sits under the timeline, the way the classic sits under the flagship
             listOf(TIMELINE, LYRICS),
+            listOf(TERMINAL),
         )
     }
 }
 
 val PlayerStyleKey = stringPreferencesKey("playerStyle")
+
+// ---- the Terminal player style's own options ----
+
+/** how far the Terminal's camera swings; Off keeps the scene still */
+enum class TerminalIntensity(val title: String, val description: String, val scale: Float) {
+    OFF("Off", "a still camera", 0f),
+    SUBTLE("Subtle", "a slow drift, a light nudge on the beat", 0.55f),
+    NORMAL("Normal", "the camera as it was shot", 1f),
+    STRONG("Strong", "wide swings, heavy kicks", 1.6f),
+}
+
+/** how much the Terminal draws: Auto picks by the device and backs off if frames run long */
+enum class TerminalQuality(val title: String, val description: String) {
+    AUTO("Auto", "by the device, easing off if it struggles"),
+    HIGH("High", "every layer, the glow and the line numbers"),
+    LOW("Low", "fewer layers, no glow, lighter on the battery"),
+}
+
+/** which way up the Terminal is drawn; Auto follows how the phone is held */
+enum class TerminalOrientation(val title: String, val description: String) {
+    AUTO("Auto", "turns sideways when the phone does"),
+    PORTRAIT("Portrait", "always upright"),
+    LANDSCAPE("Landscape", "always sideways, controls out of the way"),
+}
+
+val TerminalIntensityKey = stringPreferencesKey("terminalIntensity")
+val TerminalBeatKey = booleanPreferencesKey("terminalBeatReactive")
+val TerminalTypingKey = booleanPreferencesKey("terminalTyping")
+val TerminalQualityKey = stringPreferencesKey("terminalQuality")
+val TerminalOrientationKey = stringPreferencesKey("terminalOrientation")
 
 // the ipod player's body colours, ipod.js's three plus a pitch black one with a dark screen
 enum class IpodTheme { SILVER, BLACK, U2, TRUE_DARK }

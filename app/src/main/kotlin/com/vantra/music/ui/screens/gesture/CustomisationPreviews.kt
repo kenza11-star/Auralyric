@@ -113,6 +113,19 @@ internal fun PlaylistStylePreview(style: PlaylistStyle, coverRadius: Dp) {
 internal fun PlayerStylePreview(style: PlayerStyle) {
     when (style) {
         PlayerStyle.IPOD -> IpodPreview()
+        // lines of code in the editor's colours on black, a red cursor at the end of the last
+        PlayerStyle.TERMINAL -> Column(
+            Modifier.fillMaxSize().background(Color.Black).padding(start = 12.dp, top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(7.dp),
+        ) {
+            Bar(70.dp, 5.dp, Color(0xFFFF4D4D))
+            Bar(94.dp, 5.dp, Color(0xFFFFB454))
+            Bar(58.dp, 5.dp, Color(0xFF7EB6FF))
+            Row(horizontalArrangement = Arrangement.spacedBy(3.dp), verticalAlignment = Alignment.CenterVertically) {
+                Bar(40.dp, 5.dp, Bone)
+                Bar(6.dp, 10.dp, Color(0xFFFF2A2A))
+            }
+        }
         // the video across the card with a line of lyrics over it and the pane's bar at the bottom right
         PlayerStyle.VIDEO -> Box(Modifier.fillMaxSize().background(ArtFill)) {
             Column(Modifier.align(Alignment.BottomStart).padding(start = 12.dp, bottom = 22.dp)) {
