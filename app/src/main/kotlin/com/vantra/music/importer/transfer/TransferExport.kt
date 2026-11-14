@@ -153,8 +153,9 @@ class TransferExporter @Inject constructor(
 
     /** what this phone holds right now, for the import confirmation to compare against the zip */
     fun currentCounts(): TransferCounts {
+        // Room hands out androidx's SupportSQLiteDatabase, which reads with query(sql) and has no rawQuery
         val db = database.openHelper.readableDatabase
-        fun count(sql: String) = runCatching { db.rawQuery(sql, null).use { if (it.moveToFirst()) it.getInt(0) else 0 } }.getOrDefault(0)
+        fun count(sql: String) = runCatching { db.query(sql).use { if (it.moveToFirst()) it.getInt(0) else 0 } }.getOrDefault(0)
         return TransferCounts(
             songs = count("SELECT COUNT(*) FROM song WHERE inLibrary IS NOT NULL OR liked = 1"),
             playlists = count("SELECT COUNT(*) FROM playlist"),

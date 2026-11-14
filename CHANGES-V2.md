@@ -202,3 +202,12 @@ Read `SIGNING.md` first. It covers the migration check, key creation, the four s
 - `signing/release-certificate-sha256.txt` pinned to the verified fingerprint (it was UNSET).
 - Tests: 53 checks (restore with only two secrets, alias to step output, ambiguous alias fails).
 - The signing fix is verified by tests only. The Gradle build after it has still never been run by us.
+
+### Fix: Kotlin compile error in TransferExport.kt (CI run #86, `:app:compileArm64GmsReleaseKotlin`)
+- Verified from the log: six errors, all on line 157 (`currentCounts()`): unresolved `rawQuery`, `moveToFirst`, `getInt`,
+  plus "cannot infer type" errors that follow from them. The signing step in that run passed.
+- Root cause (read from source): `database.openHelper.readableDatabase` is Room's androidx `SupportSQLiteDatabase`, which
+  has `query(sql)` and no `rawQuery`. The other `rawQuery` calls in the transfer files use framework `SQLiteDatabase`
+  and were not touched.
+- Fix: one line, `db.rawQuery(sql, null)` -> `db.query(sql)`. Nothing else changed.
+- Not compiled here (no Android SDK or Kotlin compiler in this environment). GitHub Actions has to verify it.
