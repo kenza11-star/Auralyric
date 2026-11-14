@@ -3,7 +3,6 @@ package com.vantra.music.ui.player.terminal
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.RectF
 import android.graphics.Typeface
 import kotlin.math.abs
 import kotlin.math.floor
@@ -11,9 +10,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * One continuous editor plane, projected through the existing camera. Every baseline, gutter and
- * guide shares the same transform; rows no longer have their own depth or yaw. Wrapping is
- * measured during document construction. Drawing reuses its paints and projection scratch objects.
+ * Stage 1's continuous editor remains the focus plane. Two structured code planes behind it share
+ * a genuine perspective camera and screen safety correction. Text never rotates independently.
+ * Layout/document wrapping stays off the draw path; paints, matrices and scratch arrays are reused.
  */
 internal class TerminalRenderer {
     private val code = Paint(Paint.ANTI_ALIAS_FLAG).apply { typeface = Typeface.MONOSPACE }
@@ -27,7 +26,9 @@ internal class TerminalRenderer {
     private val matrix = Matrix()
     private val src = FloatArray(8)
     private val dst = FloatArray(8)
-    private val bounds = RectF()
+    private val focusQuad = FloatArray(8)
+    private val framing = TerminalFraming()
+    private val backgroundMatrix = Matrix()
     private val projector = TerminalProjector()
     @Volatile var failed = false
         private set
@@ -40,6 +41,8 @@ internal class TerminalRenderer {
     private var rowHeight = 0f
     private var baseline = 0f
     private var columnCount = TerminalDocument.MinColumns
+    private val viewportMotion = TerminalViewportMotion()
+    private var lastDrawNs = 0L
     private var viewport = IntArray(0)
     private var viewportDoc: TerminalDocument? = null
     private var viewportLine = Int.MIN_VALUE
@@ -95,31 +98,60 @@ internal class TerminalRenderer {
         try {
             canvas.drawColor(android.graphics.Color.BLACK)
             if (width <= 0 || height <= 0 || charW <= 0f) return
-            if (!placePage(camera, landscape)) return
-            canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
-            canvas.concat(matrix)
-            canvas.clipRect(0f, 0f, pageWidth, height.toFloat())
             val textLeft = gutter + 10f * density
             val focusY = height * 0.48f
             val budget = visibleRows()
             if (viewportDoc !== doc || viewportLine != cursor.line || viewportCursorRow != cursor.row ||
                 viewportBudget != budget || viewportIdle != cursor.idle) {
-                viewport = doc.viewportRows(cursor, budget)
+                val next = doc.viewportRows(cursor, budget)
+                if (viewportDoc === doc) viewportMotion.change(viewport, next, scroll, cursor.row)
+                else viewportMotion.offset.snap(0f)
+                viewport = next
                 viewportDoc = doc
                 viewportLine = cursor.line
                 viewportCursorRow = cursor.row
                 viewportBudget = budget
                 viewportIdle = cursor.idle
             }
+            val dt = if (lastDrawNs == 0L) 0f else ((timeNs - lastDrawNs) / 1e9f).coerceIn(0f, 0.1f)
+            lastDrawNs = timeNs
+            viewportMotion.offset.step(dt, 0f, 36f, 12f)
+            val rowOffset = viewportMotion.offset.value * rowHeight
             val focus = viewportPosition(scroll)
+            var activeTop = focusY
+            var activeBottom = focusY + rowHeight
+            if (!cursor.idle) {
+                var found = false
+                for (slot in viewport.indices) {
+                    val row = doc.rows[viewport[slot]]
+                    if (row.line == cursor.line && row.kind == KindLyric) {
+                        val top = focusY + (slot - focus) * rowHeight + rowOffset
+                        if (!found) { activeTop = top; found = true }
+                        activeBottom = top + rowHeight
+                    }
+                }
+            }
+            if (!placePage(camera, landscape, activeTop, activeBottom)) return
+            canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
+            // Painter order: far, middle, editor. LOW keeps one rear plane.
+            if (!low) drawDepthPlane(canvas, doc, scroll, 0.95f, -0.66f, 0.17f)
+            drawDepthPlane(canvas, doc, scroll, 0.45f, 0.66f, 0.23f)
+            canvas.concat(matrix)
+            // A lyric can lie outside the old local page while scrolling catches up. The
+            // projected safe band already fits it; do not clip it away in pre-projection space.
+            val pageTop = min(0f, activeTop)
+            val pageBottom = max(height.toFloat(), activeBottom)
+            canvas.clipRect(0f, pageTop, pageWidth, pageBottom)
+            // A dark editor backing prevents rear code from competing with real words.
+            fill.color = color(0x000000, 0.92f)
+            canvas.drawRect(0f, pageTop, pageWidth, pageBottom, fill)
             guide.color = 0xFF20252B.toInt()
             canvas.drawLine(gutter, 0f, gutter, height.toFloat(), guide)
             val blink = solidCursor || ((timeNs / BlinkNs) and 1L) == 0L
             for (slot in viewport.indices) {
                 val r = viewport[slot]
                 val row = doc.rows[r]
-                val top = focusY + (slot - focus) * rowHeight
-                if (top + rowHeight < 0f || top > height) continue
+                val top = focusY + (slot - focus) * rowHeight + rowOffset
                 val active = row.line == cursor.line && row.line >= 0
                 val activeLyric = active && row.kind == KindLyric && !cursor.idle
                 val neighbor = row.kind == KindLyric && abs(row.line - cursor.line) <= 1
@@ -159,7 +191,7 @@ internal class TerminalRenderer {
                 }
             }
             if (cursor.idle && cursor.row !in doc.rows.indices && blink) {
-                val y = focusY + (viewportPosition(cursor.row.toFloat()) - focus) * rowHeight
+                val y = focusY + (viewportPosition(cursor.row.toFloat()) - focus) * rowHeight + rowOffset
                 fill.color = TerminalPalette.Cursor
                 canvas.drawRect(textLeft, y + 4f * density, textLeft + density, y + rowHeight - 4f * density, fill)
             }
@@ -172,14 +204,7 @@ internal class TerminalRenderer {
     }
 
     /** Interpolate the existing row-index scroll spring across folded line-number gaps. */
-    private fun viewportPosition(row: Float): Float {
-        if (viewport.isEmpty()) return 0f
-        if (row <= viewport[0]) return row - viewport[0]
-        for (i in 1 until viewport.size) {
-            if (row <= viewport[i]) return i - 1 + (row - viewport[i - 1]) / (viewport[i] - viewport[i - 1])
-        }
-        return viewport.lastIndex + row - viewport.last()
-    }
+    private fun viewportPosition(row: Float): Float = viewportMotion.position(viewport, row)
 
     private fun drawRow(canvas: Canvas, row: TerminalRow, left: Float, y: Float, edge: Float, activeLyric: Boolean, active: Boolean, neighbor: Boolean) {
         var k = 0
@@ -212,29 +237,78 @@ internal class TerminalRenderer {
         return x
     }
 
-    /** One homography for the whole editor, fitted into its reserved viewport after projection. */
-    private fun placePage(camera: TerminalCamera, landscape: Boolean): Boolean {
-        projector.setup(width / 2f, height / 2f, width * (if (landscape) 0.78f else 1.5f), camera)
+    /** Projection of an entire world plane, using caller-owned matrix storage. */
+    private fun projectPlane(z: Float, offsetX: Float, out: Matrix): Boolean {
         val halfW = pageWidth / 2f
         val halfH = height / 2f
-        if (!projector.project(-halfW, -halfH, 0f, dst, 0) ||
-            !projector.project(halfW, -halfH, 0f, dst, 2) ||
-            !projector.project(halfW, halfH, 0f, dst, 4) ||
-            !projector.project(-halfW, halfH, 0f, dst, 6)) return false
+        if (!projector.project(-halfW + offsetX, -halfH, z, dst, 0) ||
+            !projector.project(halfW + offsetX, -halfH, z, dst, 2) ||
+            !projector.project(halfW + offsetX, halfH, z, dst, 4) ||
+            !projector.project(-halfW + offsetX, halfH, z, dst, 6)) return false
         src[0] = 0f; src[1] = 0f; src[2] = pageWidth; src[3] = 0f
         src[4] = pageWidth; src[5] = height.toFloat(); src[6] = 0f; src[7] = height.toFloat()
-        if (!matrix.setPolyToPoly(src, 0, dst, 0, 4)) return false
-        bounds.set(0f, 0f, pageWidth, height.toFloat())
-        matrix.mapRect(bounds)
-        val margin = min(6f * density, min(width, height) * 0.02f)
-        val fit = min(1f, min((width - margin * 2f) / max(1f, bounds.width()), (height - margin * 2f) / max(1f, bounds.height())))
-        matrix.postScale(fit, fit, bounds.centerX(), bounds.centerY())
-        bounds.set(0f, 0f, pageWidth, height.toFloat())
-        matrix.mapRect(bounds)
-        val dx = when { bounds.left < margin -> margin - bounds.left; bounds.right > width - margin -> width - margin - bounds.right; else -> 0f }
-        val dy = when { bounds.top < margin -> margin - bounds.top; bounds.bottom > height - margin -> height - margin - bounds.bottom; else -> 0f }
-        matrix.postTranslate(dx, dy)
+        return out.setPolyToPoly(src, 0, dst, 0, 4)
+    }
+
+    private var focalPx = 1000f
+
+    private fun placePage(camera: TerminalCamera, landscape: Boolean, top: Float, bottom: Float): Boolean {
+        // A longer portrait lens protects narrow text; landscape admits more lateral depth.
+        focalPx = width * (if (landscape) 1.1f else 1.65f)
+        projector.setup(width / 2f, height / 2f, focalPx, camera)
+        if (!projectPlane(0f, 0f, matrix)) return false
+        val x = pageWidth / 2f
+        val t = top - height / 2f
+        val b = bottom - height / 2f
+        if (!projector.project(-x, t, 0f, focusQuad, 0) ||
+            !projector.project(x, t, 0f, focusQuad, 2) ||
+            !projector.project(x, b, 0f, focusQuad, 4) ||
+            !projector.project(-x, b, 0f, focusQuad, 6)) return false
+        framing.fit(dst, focusQuad, width.toFloat(), height.toFloat())
+        correctFraming(matrix)
         return true
+    }
+
+    private fun correctFraming(out: Matrix) {
+        out.postScale(framing.scale, framing.scale)
+        out.postTranslate(framing.dx, framing.dy)
+    }
+
+    private fun drawDepthPlane(canvas: Canvas, doc: TerminalDocument, scroll: Float,
+                               depth: Float, lateral: Float, opacity: Float) {
+        val z = focalPx * depth
+        if (!projectPlane(z, pageWidth * lateral, backgroundMatrix)) return
+        correctFraming(backgroundMatrix)
+        val depthFade = projector.scaleAt(z).coerceIn(0f, 1f)
+        val saved = canvas.save()
+        try {
+            canvas.concat(backgroundMatrix)
+            canvas.clipRect(0f, 0f, pageWidth, height.toFloat())
+            guide.color = color(TerminalPalette.Gutter, opacity * depthFade)
+            canvas.drawLine(gutter, 0f, gutter, height.toFloat(), guide)
+            // Use actual document scaffolding, without duplicating timed lyric strings behind them.
+            val centre = floor(scroll).toInt()
+            val radius = min(14, visibleRows())
+            val first = max(0, centre - radius)
+            val last = min(doc.rows.lastIndex, centre + radius)
+            for (r in first..last) {
+                val row = doc.rows[r]
+                if (row.kind == KindLyric) continue
+                val y = height * 0.48f + (r - scroll) * rowHeight + baseline
+                if (y < 0f || y > height + rowHeight) continue
+                numbers.color = color(TerminalPalette.Gutter, opacity * depthFade * 0.65f)
+                canvas.drawText(row.lineNo, gutter - 8f * density, y, numbers)
+                var k = 0
+                while (k < row.spans.size) {
+                    code.color = color(row.spans[k + 2], opacity * depthFade)
+                    canvas.drawText(row.text, row.spans[k], row.spans[k + 1],
+                        gutter + 10f * density + xAt(row, row.spans[k]), y, code)
+                    k += TerminalSyntax.Stride
+                }
+            }
+        } finally {
+            canvas.restoreToCount(saved)
+        }
     }
 
     private fun color(rgb: Int, alpha: Float): Int = ((alpha.coerceIn(0f, 1f) * 255f).toInt() shl 24) or (rgb and 0xFFFFFF)

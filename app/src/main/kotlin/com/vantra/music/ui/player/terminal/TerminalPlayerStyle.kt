@@ -219,7 +219,7 @@ private class SceneState {
     var timeNs = 0L
     var solidCursor = false
     var followX = 0f
-    var lastLine = -2
+    var document: TerminalDocument? = null
     var primed = false
 }
 
@@ -334,10 +334,14 @@ private fun TerminalScene(
                         val posMs = conn.player.currentPosition
 
                         // a seek or a restart: what was heard before no longer lines up
+                        var seeking = false
                         if (lastPos != Long.MIN_VALUE) {
                             val speed = conn.player.playbackParameters.speed
                             val expected = if (playing) stepDt * 1000f * speed else 0f
-                            if (abs(posMs - lastPos - expected) > 400f) s.tracker.reset()
+                            if (abs(posMs - lastPos - expected) > 400f) {
+                                s.tracker.reset()
+                                seeking = true
+                            }
                         }
 
                         // the audio, as heard right now; only when playing, and only if the player can be tapped
@@ -354,25 +358,25 @@ private fun TerminalScene(
 
                         val lyricMs = position.positionMs()
                         docNow.locate(lyricMs, typingPref && !reduced, s.cursor)
-                        // the resting angle onto the page, and where along the row the words are being written
+                        // Preserve Stage 1 resting composition; the camera follows lyric blocks smoothly.
                         s.camera.baseYaw = if (landscapeNow) 0.10f else 0.06f
                         s.camera.basePitch = -0.09f
-                        s.followX = ((s.cursor.col.toFloat() / maxOf(1, docNow.columns) - 0.5f) * 2f).coerceIn(-1f, 1f)
-                        // the lyric fallback: only a gentle push on a new line, never passed off as a beat
-                        if (s.cursor.line != s.lastLine) {
-                            if (src == BeatSource.LYRIC_TIMING && s.cursor.line >= 0 && s.lastLine != -2) {
-                                s.camera.dolly.kick(0.10f * k)
-                                s.camera.yaw.kick(0.05f * k)
-                            }
-                            s.lastLine = s.cursor.line
-                        }
+                        // Track the block, never the typing caret: typing must not steer the shot.
+                        val line = docNow.lines.getOrNull(s.cursor.line)
+                        s.followX = if (line == null) 0f else kotlin.math.sin(line.index * 0.65f)
+                        val nextTime = docNow.lines.getOrNull(s.cursor.line + 1)?.timeMs
+                        val interval = if (line == null) 1L else
+                            ((nextTime ?: (line.timeMs + 6_000L)) - line.timeMs).coerceAtLeast(1L)
+                        val progress = if (line == null) 0f else
+                            ((lyricMs - line.timeMs).toFloat() / interval).coerceIn(0f, 1f)
 
                         val target = docNow.focusRow(s.cursor, renderer.visibleRows())
-                        if (!s.primed || abs(target - s.scroll.value) > 14f) {
+                        if (!s.primed || s.document !== docNow || seeking) {
                             s.scroll.snap(target)
                             s.primed = true
+                            s.document = docNow
                         } else {
-                            s.scroll.step(stepDt, target, 70f, 13f)
+                            s.scroll.step(stepDt, target, 49f, 14f)
                         }
                         s.camera.update(
                             dt = stepDt,
@@ -382,7 +386,9 @@ private fun TerminalScene(
                             energy = if (heard) s.tracker.energy else 0f,
                             kick = if (heard) s.tracker.kick else 0f,
                             wide = landscapeNow,
-                            follow = s.followX * k,
+                            follow = s.followX,
+                            progress = progress,
+                            idle = s.cursor.idle,
                         )
                         s.glow = if (heard) s.tracker.bass else if (src == BeatSource.LYRIC_TIMING) 0.2f else 0.1f
                         s.solidCursor = playing && s.cursor.typed < (docNow.lines.getOrNull(s.cursor.line)?.text?.length ?: 0)
