@@ -1,0 +1,19 @@
+Original file members: 5068
+Modified: 4
+Unchanged original members: 5064
+Deleted: 0
+Added: 6
+
+MODIFIED
+app/src/test/kotlin/com/vantra/music/ui/player/terminal/TerminalCoreTest.kt
+app/src/main/kotlin/com/vantra/music/ui/player/terminal/TerminalRenderer.kt
+app/src/main/kotlin/com/vantra/music/ui/player/terminal/TerminalCamera.kt
+app/src/main/kotlin/com/vantra/music/ui/player/terminal/TerminalPlayerStyle.kt
+
+ADDED
+app/src/main/kotlin/com/vantra/music/ui/player/terminal/TerminalViewportMotion.kt
+app/src/test/kotlin/com/vantra/music/ui/player/terminal/TerminalCameraStage2Test.kt
+docs/terminal-v3/STAGE2-ARCHIVE-AUDIT.txt
+docs/terminal-v3/STAGE2-PLAN.md
+docs/terminal-v3/STAGE2-REPORT.md
+docs/terminal-v3/STAGE2-TEST-OUTPUT.txt
