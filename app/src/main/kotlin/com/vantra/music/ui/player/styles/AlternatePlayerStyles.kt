@@ -79,6 +79,7 @@ fun AlternatePlayerStyle(
         PlayerStyle.VIDEO -> com.vantra.music.ui.player.video.VideoPlayerStyle(actions, modifier, preview)
         PlayerStyle.BEDSIDE -> com.vantra.music.ui.player.bedside.BedsidePlayerStyle(actions, modifier, preview)
         PlayerStyle.BEDSIDE_TILES -> com.vantra.music.ui.player.bedside.BedsideTilesStyle(actions, modifier, preview)
+        PlayerStyle.TERMINAL -> com.vantra.music.ui.player.terminal.TerminalPlayerStyle(actions, modifier, preview)
         PlayerStyle.MODULE -> ModulePlayerStyle(actions, modifier, preview)
         PlayerStyle.FLAGSHIP, PlayerStyle.CLASSIC, PlayerStyle.TURNTABLE -> Unit
     }
@@ -149,10 +150,13 @@ internal fun StyleFrame(
     tones: StyleTones,
     /** what lies under the style and holds still when it turns; the playhead split when null */
     background: (@Composable BoxScope.() -> Unit)? = null,
+    /** a style that decides its own turn (the Terminal's Auto follows the phone) says so here; null uses the stored switch */
+    rotatedOverride: Boolean? = null,
     content: @Composable BoxScope.(landscape: Boolean, menuOpen: Boolean, setMenuOpen: (Boolean) -> Unit, rotated: Boolean, setRotated: (Boolean) -> Unit) -> Unit,
 ) {
     val connection = LocalPlayerConnection.current
-    val (rotated, setRotated) = rememberStyleRotation(style)
+    val (storedRotated, setRotated) = rememberStyleRotation(style)
+    val rotated = rotatedOverride ?: storedRotated
     var menuOpen by remember { mutableStateOf(false) }
     // turned sideways, its lists still fling the way the finger went
     TurnedFlingFix(active = rotated && !preview)
@@ -812,7 +816,7 @@ private fun LyricsPlayerStyle(actions: StyleActions, modifier: Modifier, preview
 
 /** the transport circles and the ••• menu where the timeline and lyrics styles keep them */
 @Composable
-private fun BoxScope.StyleControls(
+internal fun BoxScope.StyleControls(
     tones: StyleTones,
     landscape: Boolean,
     insets: StyleInsets,
