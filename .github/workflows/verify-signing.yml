@@ -1,6 +1,7 @@
 name: Verify signing key (read-only)
 
 # Manual only. Never runs on push or pull request, so secrets are never given to a fork or an unreviewed change.
+# Needs only RELEASE_KEYSTORE_BASE64 and RELEASE_STORE_PASSWORD; alias and key password are optional.
 # It builds nothing, uploads nothing, and does not change, replace or delete any secret.
 on:
   workflow_dispatch:

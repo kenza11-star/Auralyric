@@ -116,7 +116,22 @@ check "compare: colon-separated fingerprint accepted" 0 "$(INSTALLED_SHA256="$(e
 check "compare: other certificate is MISMATCH (exit 10)" 10 "$(INSTALLED_SHA256="$(printf 'a%.0s' {1..64})" RELEASE_KEYSTORE_BASE64="$B64" cmp_run bash "$CMP")"
 check "compare: no secrets is SECRETS_MISSING (exit 11)" 11 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64= RELEASE_STORE_PASSWORD= RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
 check "compare: wrong password is KEYSTORE_UNUSABLE (exit 12)" 12 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_STORE_PASSWORD=wrong RELEASE_KEY_PASSWORD=wrong cmp_run bash "$CMP")"
-check "compare: wrong alias is KEYSTORE_UNUSABLE (exit 12)" 12 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_KEY_ALIAS=nope cmp_run bash "$CMP")"
+check "compare: wrong alias still compares by fingerprint (exit 0)" 0 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_KEY_ALIAS=nope cmp_run bash "$CMP")"
+# the user's real situation: only keystore + store password, alias and key password unknown
+check "compare: no alias, no key password: MATCH (exit 0)" 0 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
+grep -q 'alias `vantra-release`' "$WORK/summary.md" && check "compare: alias is discovered and reported" 0 0 || check "compare: alias is discovered and reported" 0 1
+grep -q "private key decrypts with the store password" "$WORK/summary.md" && check "compare: key password status reported (PKCS12)" 0 0 || check "compare: key password status reported (PKCS12)" 0 1
+check "compare: no alias, other certificate: MISMATCH (exit 10)" 10 "$(INSTALLED_SHA256="$(printf 'b%.0s' {1..64})" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
+check "compare: no alias, wrong store password: KEYSTORE_UNUSABLE (exit 12)" 12 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_STORE_PASSWORD=wrong RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
+check "compare: store password missing: SECRETS_MISSING (exit 11)" 11 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64="$B64" RELEASE_STORE_PASSWORD= RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
+# legacy JKS keystore whose key password differs from the store password: certificate still comparable, limitation reported
+JKS="$WORK/legacy.jks"
+keytool -genkeypair -storetype JKS -keystore "$JKS" -storepass jkstorepass1 -keypass jkkeypass2 -alias legacy-key -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=Legacy" >/dev/null 2>&1
+JFP="$(keytool -list -v -keystore "$JKS" -storepass jkstorepass1 -alias legacy-key 2>/dev/null | awk '/SHA256:/ { sub(/.*SHA256: */, ""); gsub(/:/, ""); print tolower($0); exit }')"
+check "compare: JKS with different key password: MATCH (exit 0)" 0 "$(INSTALLED_SHA256="$JFP" RELEASE_KEYSTORE_BASE64="$(base64 -w0 < "$JKS")" RELEASE_STORE_PASSWORD=jkstorepass1 RELEASE_KEY_ALIAS= RELEASE_KEY_PASSWORD= cmp_run bash "$CMP")"
+grep -q "NOT verified" "$WORK/summary.md" && grep -q 'alias `legacy-key`' "$WORK/summary.md" && check "compare: JKS reports key-password limitation and alias" 0 0 || check "compare: JKS reports key-password limitation and alias" 0 1
+for sec in jkstorepass1 jkkeypass2 "$PASS"; do grep -q -- "$sec" "$WORK/summary.md" "$LOG" && { check "compare: no password in summary or log" 0 1; break; }; done
+export JKSLEAK=checked
 check "compare: garbage base64 is KEYSTORE_UNUSABLE (exit 12)" 12 "$(INSTALLED_SHA256="$FP" RELEASE_KEYSTORE_BASE64='@@@' cmp_run bash "$CMP")"
 check "compare: malformed installed fingerprint is a usage error (exit 1)" 1 "$(INSTALLED_SHA256=xyz RELEASE_KEYSTORE_BASE64="$B64" cmp_run bash "$CMP")"
 # read-only: the keystore file and the pinned file are untouched
@@ -137,7 +152,7 @@ check "compare: two-signer APK is refused (exit 1)" 1 "$(INSTALLED_APK="$WORK/fa
 
 # T14: no password appears in any captured output
 leaks=0
-for secret in "$PASS"; do grep -q -- "$secret" "$LOG" && leaks=$((leaks+1)); done
+for secret in "$PASS" jkstorepass1 jkkeypass2; do grep -q -- "$secret" "$LOG" && leaks=$((leaks+1)); done
 check "no password in any script output" 0 "$leaks"
 
 echo

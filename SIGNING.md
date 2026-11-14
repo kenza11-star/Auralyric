@@ -74,8 +74,15 @@ To compare it with the key held in your GitHub secrets, from the GitHub website 
 |---|---|---|
 | `MATCH` | The stored key signed the installed app. | Copy the fingerprint into `signing/release-certificate-sha256.txt`, commit. Done. |
 | `MISMATCH` | The stored key works but is a different key. | Nothing is changed. Read section 6, then decide. A new key needs your approval. |
-| `SECRETS_MISSING` | One or more of the four secrets isn't set. | Nothing is changed. Don't create a key yet. |
-| `KEYSTORE_UNUSABLE` | The secrets exist but the key won't open (wrong password, alias, bad base64). | Fix the secret value first. Section 3 only if the key is truly lost. |
+| `SECRETS_MISSING` | `RELEASE_KEYSTORE_BASE64` or `RELEASE_STORE_PASSWORD` isn't set. | Nothing is changed. Don't create a key yet. |
+| `KEYSTORE_UNUSABLE` | The keystore won't open with the store password (wrong password, damaged, bad base64), or holds no private key. | Fix the secret value first. Section 3 only if the key is truly lost. |
+
+The check needs only `RELEASE_KEYSTORE_BASE64` and `RELEASE_STORE_PASSWORD`. If `RELEASE_KEY_ALIAS` and
+`RELEASE_KEY_PASSWORD` are unset or forgotten, it reads the alias(es) out of the keystore, lists each with its
+certificate fingerprint, and compares them with the installed app. The summary also says whether the private key
+could be unlocked: for a PKCS12 keystore the key password equals the store password (verified); for an old JKS
+keystore the key password can differ and cannot be checked, which the summary states. A `MATCH` shows the alias to
+store as `RELEASE_KEY_ALIAS`.
 
 This workflow only runs when you press the button. It builds nothing, uploads nothing, and cannot write, replace or
 delete a secret (`permissions: contents: read`). Secrets are masked by GitHub and the script prints only fingerprints.

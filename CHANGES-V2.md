@@ -181,3 +181,11 @@ Read `SIGNING.md` first. It covers the migration check, key creation, the four s
 - `tests/signing/run.sh`: 41 checks, 41 passing in the build sandbox (throwaway keystore only). New: `tests/signing/make_fake_apk.py`.
 - No existing change was altered. `signing/release-certificate-sha256.txt` is still `UNSET` on purpose until the verdict is known.
 - Not run: the workflow on GitHub (needs your secrets), Android compilation (no Android SDK here).
+
+### Update: check works without alias and key password
+- `compare-certificates.sh` now needs only the keystore and store password. It opens PKCS12 or legacy JKS, lists every
+  private-key entry with alias and certificate SHA-256, compares each with the installed certificate, and reports
+  whether the private key could be unlocked (PKCS12: with the store password; JKS: reported as not verifiable).
+- `SECRETS_MISSING` now means only keystore or store password absent. A wrong or unknown alias is reported, not fatal.
+- Tests: 49 of 49 pass (added no-alias, wrong-store-password, JKS different-key-password, no-leak checks).
+- Still read-only: no secret is written or replaced, no keystore is created.
